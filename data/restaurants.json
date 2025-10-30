@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Phở Lệ",
+    "rating": 4.7,
+    "price_level": "$$",
+    "lat": 10.75501,
+    "lon": 106.67102,
+    "main_image_url": "https://example.com/images/pho-le-cover.jpg",
+    "tags": ["pho", "bò", "quán ăn địa phương", "quận 5", "bữa sáng"]
+  },
+  {
+    "id": 2,
+    "name": "Quán ăn chay S",
+    "rating": 4.8,
+    "price_level": "$$$",
+    "lat": 10.78105,
+    "lon": 106.69007,
+    "main_image_url": "https://example.com/images/chay-s-cover.jpg",
+    "tags": ["chay", "lành mạnh", "sang trọng", "quận 1"]
+  },
+  {
+    "id": 3,
+    "name": "Cơm Tấm Ba Ghiền",
+    "rating": 4.5,
+    "price_level": "$",
+    "lat": 10.78450,
+    "lon": 106.65750,
+    "main_image_url": "https://example.com/images/ba-ghien-cover.jpg",
+    "tags": ["cơm tấm", "sườn", "bình dân", "tân bình"]
+  }
+]

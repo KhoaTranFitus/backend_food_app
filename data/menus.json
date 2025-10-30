@@ -1,0 +1,65 @@
+{
+  "1": {
+    "full_address": "413-415 Nguyễn Trãi, Phường 7, Quận 5, TP. HCM",
+    "phone_number": "02839234008",
+    "opening_hours": "6:00 AM - 1:00 AM",
+    "menu": [
+      {
+        "dish_name": "Phở Tái",
+        "price": 70000,
+        "description": "Thịt bò tái mềm, nước lèo đậm đà.",
+        "dish_tags": ["bò", "nước"]
+      },
+      {
+        "dish_name": "Phở Nạm",
+        "price": 75000,
+        "description": "Nạm bò được hầm kỹ, béo ngậy.",
+        "dish_tags": ["bò", "nạm"]
+      },
+      {
+        "dish_name": "Chén hột gà",
+        "price": 10000,
+        "description": "Trứng gà chần ăn kèm.",
+        "dish_tags": ["trứng", "ăn kèm"]
+      }
+    ]
+  },
+  "2": {
+    "full_address": "2A Đặng Tất, Phường Tân Định, Quận 1, TP. HCM",
+    "phone_number": "02838480749",
+    "opening_hours": "10:00 AM - 10:00 PM",
+    "menu": [
+      {
+        "dish_name": "Nấm bào ngư xào",
+        "price": 120000,
+        "description": "Nấm bào ngư tươi xào cùng rau củ.",
+        "dish_tags": ["nấm", "món chính", "xào"]
+      },
+      {
+        "dish_name": "Cơm gạo lứt",
+        "price": 40000,
+        "description": "Cơm gạo lứt nấu dẻo, tốt cho sức khỏe.",
+        "dish_tags": ["cơm", "gạo lứt"]
+      }
+    ]
+  },
+  "3": {
+    "full_address": "84 Đặng Văn Ngữ, Phường 10, Phú Nhuận, TP. HCM",
+    "phone_number": "02838441243",
+    "opening_hours": "7:00 AM - 9:30 PM",
+    "menu": [
+      {
+        "dish_name": "Cơm sườn bì chả",
+        "price": 60000,
+        "description": "Đĩa cơm đầy đủ sườn nướng, bì, chả trứng.",
+        "dish_tags": ["heo", "sườn", "cơm"]
+      },
+      {
+        "dish_name": "Sườn cốt lết (thêm)",
+        "price": 30000,
+        "description": "Thêm một miếng sườn nướng.",
+        "dish_tags": ["heo", "sườn"]
+      }
+    ]
+  }
+}
