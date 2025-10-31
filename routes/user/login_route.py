@@ -7,12 +7,11 @@ from email.mime.text import MIMEText
 import random
 import requests
 app = Flask(__name__)
-API_Key = "AIzaSyAeY6UVkgtl7MSjuLBlMIcDSoOYLXLJSYw"
+API_KEY = "AIzaSyAeY6UVkgtl7MSjuLBlMIcDSoOYLXLJSYw"
 cred = credentials.Certificate("food-app-d0127-firebase-adminsdk-fbsvc-fb06070e09.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://food-app-d0127-default-rtdb.firebaseio.com/'
 })
-
 SENDER_EMAIL = "luminkhoi@gmail.com" # T dùng Gmail của t để gửi mã xác nhận cho người dùng luôn
 SENDER_APP_PASSWORD = "ztimyvmgtrdfrcan"
 
@@ -30,7 +29,6 @@ def send_verification_email(to_email, code):
             server.send_message(msg)
     except Exception as e:
         print("Lỗi khi gửi email:", e)
-
 # API Đăng ký tài khoản
 @app.route("/register", methods=["POST"])
 def register():
@@ -56,8 +54,6 @@ def register():
     })
     send_verification_email(email, verification_code)
     return jsonify({"message": "Đăng ký thành công! Mã xác thực đã được gửi đến email của bạn."}), 200
-
-
 # API Xác minh mã OTP
 @app.route("/verify", methods=["POST"])
 def verify():
@@ -85,8 +81,6 @@ def verify():
         return jsonify({"message": "Xác thực thành công! Bạn có thể đăng nhập ngay bây giờ."}), 200
     else:
         return jsonify({"error": "Mã xác thực không chính xác."}), 400
-
-
 # API Đăng nhập
 @app.route('/login', methods=['POST'])
 def login():
@@ -99,7 +93,7 @@ def login():
         "returnSecureToken": True
     }
     response = requests.post(
-        f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_Key}",
+        f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
         json=payload
     )
     if response.status_code == 200:
