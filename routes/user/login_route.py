@@ -114,6 +114,6 @@ def login():
         return jsonify({
             "error": response.json().get("error", {}).get("message", "Đăng nhập thất bại.")
         }), 400
-# Chạy
+# Chạy app
 if __name__ == "__main__":
     app.run(debug=True)
