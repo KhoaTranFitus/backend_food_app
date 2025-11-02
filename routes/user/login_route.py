@@ -16,7 +16,7 @@ SENDER_EMAIL = "luminkhoi@gmail.com" # T dùng Gmail của t để gửi mã xá
 SENDER_APP_PASSWORD = "ztimyvmgtrdfrcan"
 
 def send_verification_email(to_email, code):
-    subject = "Mã xác thực tài khoản Travel App"
+    subject = "Mã xác thực tài khoản Food App"
     body = f"Mã xác thực của bạn là: {code}"
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = subject
@@ -106,7 +106,7 @@ def login():
         })
     else:
         return jsonify({
-            "error": response.json().get("error", {}).get("message", "Đăng nhập thất bại.")
+            "error": response.json().get("error", {}).get("message", "Sai email hoặc password.")
         }), 400
 # Chạy app
 if __name__ == "__main__":
