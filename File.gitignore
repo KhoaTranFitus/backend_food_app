@@ -1,8 +1,26 @@
-# Ignore executable files
+# --- Bí Mật & Credentials ---
+# Ẩn file biến môi trường
+.env
+
+# Ẩn file key bí mật của Firebase (CHỈ ẨN FILE NÀY)
+food-app-d0127-firebase-adminsdk-fbsvc-fb06070e09.json
+
+# --- Python ---
+# Bỏ qua các thư mục cache do Python tự tạo
+__pycache__/
+*.pyc
+
+# Bỏ qua thư mục môi trường ảo (virtual environment)
+venv/
+.venv/
+env/
+
+# --- Hệ Điều Hành (OS) ---
+.DS_Store
+Thumbs.db
+
+# --- Khác ---
 *.exe
-
-
-# Ignore build directories
 build/
 release/
 debug/
