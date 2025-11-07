@@ -25,8 +25,13 @@ def register():
     verification_code = str(random.randint(100000, 999999))
     db.reference("verification_codes").child(user.uid).set({
         "email": email,
-        "code": verification_code
+        "code": verification_code,
     })
-    
-    send_verification_email(email, verification_code)
-    return jsonify({"message": "Đăng ký thành công! Mã xác thực đã được gửi đến email của bạn."}), 200
+    try:
+        send_verification_email(email, verification_code)
+        return jsonify({"message": "Đăng ký thành công! Mã xác thực đã được gửi đến email của bạn."}), 200
+    except Exception as e:
+        print (f"Lỗi ghi gửi mã xác thực: {e}")
+        auth.delete_user(user.uid)
+        db.reference("verification_codes").child(user.uid).delete()
+        return jsonify({"error": "Email không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại."}), 400
