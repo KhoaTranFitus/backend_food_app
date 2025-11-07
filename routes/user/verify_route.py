@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from firebase_admin import auth, db
+#from firebase_admin import auth, db
 from . import user_bp  # Import blueprint 'user_bp' từ file __init__.py
 
 @user_bp.route("/verify", methods=["POST"])
