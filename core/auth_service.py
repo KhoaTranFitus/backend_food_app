@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(BASE_DIR, 'File.env')
 
 print(f"🔍 Loading env from: {ENV_PATH}")
-load_dotenv(ENV_PATH)  # 🔥 DÒNG QUAN TRỌNG NHẤT
+load_dotenv(ENV_PATH)
 
 # Lấy biến môi trường
 API_KEY = os.getenv('GOOGLE_API_KEY')
