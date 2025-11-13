@@ -2,6 +2,7 @@
 # --- Tải dữ liệu 1 lần duy nhất khi backend khởi động ---
 import json
 import os
+from collections import defaultdict
 
 def load_data(filename):
     """Hàm đọc file JSON và xử lý lỗi cơ bản."""
@@ -35,4 +36,22 @@ DB_MENUS = load_data(MENUS_PATH)
 DB_CATEGORIES = load_data(CATEGORIES_PATH)
 DB_USERS = load_data(USERS_PATH)
 
+# --- TẠO INDEX ĐỂ TỐI ƯU TÌM KIẾM ---
+
+# 1. Tạo index tra cứu nhà hàng (key: "id", value: {restaurant_data})
+RESTAURANTS_DICT = {str(r['id']): r for r in DB_RESTAURANTS}
+
+# 2. Tạo index tra cứu menu (key: "restaurant_id", value: [list of menu items])
+MENUS_BY_RESTAURANT_ID = defaultdict(list)
+for item in DB_MENUS:
+    res_id_str = str(item.get('restaurant_id'))
+    if res_id_str:
+        MENUS_BY_RESTAURANT_ID[res_id_str].append(item)
+
+# 3. Tạo index tra cứu user (key: "id", value: {user_data})
+USERS_DICT = {str(u['id']): u for u in DB_USERS}
+
+print(f"✔️ Đã tạo index tra cứu cho {len(RESTAURANTS_DICT)} nhà hàng.")
+print(f"✔️ Đã nhóm menu cho {len(MENUS_BY_RESTAURANT_ID)} nhà hàng.")
+print(f"✔️ Đã tạo index tra cứu cho {len(USERS_DICT)} người dùng.")
 print("🎯 Tất cả dữ liệu đã được load thành công!")
