@@ -2,6 +2,7 @@ from flask import request, jsonify
 from firebase_admin import auth, db
 from . import user_bp
 from core.auth_service import send_verification_email, load_users, save_users
+
 import random
 import json, os
 

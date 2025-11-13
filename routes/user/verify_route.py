@@ -2,6 +2,7 @@ from flask import request, jsonify
 from firebase_admin import auth, db
 from . import user_bp  # Import blueprint từ __init__.py
 
+
 @user_bp.route("/verify", methods=["POST"])
 def verify():
     data = request.get_json()
