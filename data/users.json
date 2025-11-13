@@ -1,0 +1,24 @@
+[
+  {
+    "id": "U001",
+    "name": "Le Thi Hieu",
+    "email": "a@example.com",
+    "password": "123456",
+    "avatar_url": "",
+    "favorites": [1, 3],
+    "history": [
+      {"query": "pho", "time": "2025-11-07T10:00:00Z"}
+    ],
+    "location": {"lat": 10.77, "lon": 106.69}
+  },
+  {
+    "id": "U002",
+    "name": "Tran Thi Khoa",
+    "email": "b@example.com",
+    "password": "654321",
+    "avatar_url": "",
+    "favorites": [2],
+    "history": [],
+    "location": {"lat": 10.75, "lon": 106.67}
+  }
+]

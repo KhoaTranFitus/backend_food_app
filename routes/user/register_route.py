@@ -1,7 +1,7 @@
 from flask import request, jsonify
-from firebase_admin import auth, db
+#from firebase_admin import auth, db
 from . import user_bp  # Import blueprint từ file __init__.py
-from core.auth_service import send_verification_email # Import hàm gửi mail
+#from core.auth_service import send_verification_email # Import hàm gửi mail
 import random
 
 @user_bp.route("/register", methods=["POST"])
