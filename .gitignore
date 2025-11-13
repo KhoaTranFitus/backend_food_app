@@ -2,8 +2,8 @@
 # Ẩn file biến môi trường
 .env
 
-# Ẩn file key bí mật của Firebase (CHỈ ẨN FILE NÀY)
-food-app-d0127-firebase-adminsdk-fbsvc-fb06070e09.json
+# Ẩn các file service account key (ví dụ: Firebase, Google Cloud)
+*-firebase-adminsdk-*.json
 
 # --- Python ---
 # Bỏ qua các thư mục cache do Python tự tạo
