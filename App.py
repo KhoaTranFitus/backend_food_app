@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 # --- IMPORT KHỞI TẠO ---
 # (Import 2 file này sẽ chạy code bên trong chúng 1 lần duy nhất)
-import core.auth_service  # <- Dòng này sẽ khởi tạo Firebase
+#import core.auth_service  # <- Dòng này sẽ khởi tạo Firebase
 import core.database      # <- Dòng này sẽ tải JSON
 
 # --- IMPORT ROUTES ---
