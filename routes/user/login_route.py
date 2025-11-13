@@ -2,7 +2,7 @@ from flask import request, jsonify
 from . import user_bp  # Import blueprint
 import requests
 # Import các biến và dịch vụ đã khởi tạo từ 'core'
-from core.auth_service import API_KEY, auth 
+#from core.auth_service import API_KEY, auth 
 
 @user_bp.route('/login', methods=['POST'])
 def login():
