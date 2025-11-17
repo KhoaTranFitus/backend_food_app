@@ -35,7 +35,7 @@
     ],
     "location": {"lat": 10.74, "lon": 107.36}
   },
-  }
+  {
     "id": "U004",
     "name": "Lại Minh Thông",
     "email": "lmthong@gmail.com",
@@ -47,7 +47,7 @@
     ],
     "location": {"lat": 10.63, "lon": 106.46}
   },
-  }
+  {
     "id": "U005",
     "name": "Nguyễn Thị Yến Thanh",
     "email": "hny@gmail.com",
