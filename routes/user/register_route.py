@@ -1,70 +1,103 @@
+# routes/user/register_route.py
 from flask import request, jsonify
 from firebase_admin import auth, db
 from . import user_bp
-from core.auth_service import send_verification_email, load_users, save_users
+from core.auth_service import send_verification_email
 
 import random
-import json, os
+import re
+
+EMAIL_RE = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 @user_bp.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-    name = data.get("name", "")
+    data = request.get_json(force=True) or {}
+    email = data.get("email", "").strip()
+    password = data.get("password", "")
+    name = data.get("name", "").strip()
 
     if not email or not password or not name:
         return jsonify({"error": "Thiếu thông tin người dùng."}), 400
+    if not EMAIL_RE.match(email):
+        return jsonify({"error": "Email không hợp lệ."}), 400
+    if len(password) < 6:
+        return jsonify({"error": "Mật khẩu phải có ít nhất 6 ký tự."}), 400
 
     try:
         auth.get_user_by_email(email)
         return jsonify({"error": "Email đã tồn tại!"}), 400
-    except:
+    except auth.UserNotFoundError:
         pass
+    except Exception as e:
+        return jsonify({"error": f"Lỗi khi kiểm tra user: {e}"}), 500
 
-    # Tạo user trong Firebase Authentication
-    user = auth.create_user(email=email, password=password, email_verified=False)
+    try:
+        firebase_user = auth.create_user(email=email, password=password, email_verified=False)
+    except Exception as e:
+        return jsonify({"error": f"Tạo user thất bại: {e}"}), 500
 
-    # Tạo mã xác thực
-    verification_code = str(random.randint(100000, 999999))
-    db.reference("verification_codes").child(user.uid).set({
-        "email": email,
-        "code": verification_code
-    })
+    uid = firebase_user.uid
 
-    # Ghi user mới vào users.json
-    users = load_users()
+    users_ref = db.reference("users")
+    users_snapshot = users_ref.get() or {}
 
-    if users:
-        last_id = int(users[-1]["id"][1:])  
-        new_id = f"U{last_id + 1:03d}" # Lấy id cuối +1
-    else:
-        new_id = "U001"
+    max_num = 0
+    for k, v in users_snapshot.items():
+        try:
+            sid = v.get("id", "")
+            if isinstance(sid, str) and sid.startswith("U"):
+                num = int(sid[1:])
+                if num > max_num:
+                    max_num = num
+        except Exception:
+            continue
+    new_id = f"U{max_num + 1:03d}"
 
     new_user = {
         "id": new_id,
         "name": name,
         "email": email,
-        "password": password,
         "avatar_url": "",
         "favorites": [],
         "history": [],
         "location": {}
     }
-    users.append(new_user)
-    save_users(users)
+    try:
+        users_ref.child(uid).set(new_user)
+    except Exception as e:
+        try:
+            auth.delete_user(uid)
+        except Exception:
+            pass
+        return jsonify({"error": f"Lỗi khi ghi user vào database: {e}"}), 500
 
-    # Gửi email xác thực
+    verification_code = str(random.randint(100000, 999999))
+    db.reference("verification_codes").child(uid).set({
+        "email": email,
+        "code": verification_code,
+        "timestamp": int(__import__("time").time())
+    })
+
+    # Nếu gửi mail thất bại thì trả về, xóa user, xóa mã xác thực
     try:
         send_verification_email(email, verification_code)
-        return jsonify({
-            "message": "Đăng ký thành công! Mã xác thực đã được gửi đến email của bạn."
-        }), 200
-    # Xóa user vừa thêm khỏi users.json nếu như gmail vừa nhập ko tồn tại
     except Exception as e:
-        print(f"❌ Lỗi khi gửi mã xác thực: {e}")
-        auth.delete_user(user.uid)
-        db.reference("verification_codes").child(user.uid).delete()
-        users = [u for u in users if u["email"] != email]
-        save_users(users)
-        return jsonify({"error": "Email không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại."}), 400
+        try:
+            auth.delete_user(uid)
+        except Exception:
+            pass
+        try:
+            users_ref.child(uid).delete()
+        except Exception:
+            pass
+        try:
+            db.reference("verification_codes").child(uid).delete()
+        except Exception:
+            pass
+        return jsonify({"error": "Email không tồn tại hoặc gửi mã thất bại. Vui lòng kiểm tra lại."}), 400
+
+    return jsonify({
+        "message": "Đăng ký thành công! Mã xác thực đã được gửi đến email của bạn.",
+        "user": {"uid": uid, **new_user}
+    }), 200
+
