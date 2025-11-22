@@ -1,25 +1,33 @@
 from flask import request, jsonify
-import json, os
+from firebase_admin import db
 from . import user_bp
-from core.auth_service import load_users
 
 @user_bp.route("/favorite/view", methods=["POST"])
 def favorite_view():
-    data = request.get_json()
+    data = request.get_json(force=True, silent=True) or {}
+
     user_id = data.get("user_id")
 
     if not user_id:
-        return jsonify({"success": False, "error": "Thiếu user_id"}), 400
+        return jsonify({"error": "Thiếu user_id"}), 400
 
-    users = load_users()
+    user_ref = db.reference(f"users/{user_id}")
+    user_data = user_ref.get()
 
-    for user in users:
-        if user["id"] == user_id:
-            favorites = user.get("favorites", [])
-            return jsonify({
-                "success": True,
-                "user_id": user_id,
-                "favorites": favorites
-            }), 200
+    if not user_data:
+        return jsonify({"error": "Không tìm thấy user"}), 404
 
-    return jsonify({"success": False, "error": "Không tìm thấy user_id"}), 404
+    # Lấy danh sách yêu thích
+    favorites = user_data.get("favorites", [])
+
+    normalized = []
+    for item in favorites:
+        try:
+            normalized.append(int(item))
+        except:
+            pass
+
+    return jsonify({
+        "user_id": user_id,
+        "favorites": normalized
+    }), 200
