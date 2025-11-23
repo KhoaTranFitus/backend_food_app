@@ -38,23 +38,9 @@ def register():
 
     uid = firebase_user.uid
 
-    users_ref = db.reference("users")
-    users_snapshot = users_ref.get() or {}
-
-    max_num = 0
-    for k, v in users_snapshot.items():
-        try:
-            sid = v.get("id", "")
-            if isinstance(sid, str) and sid.startswith("U"):
-                num = int(sid[1:])
-                if num > max_num:
-                    max_num = num
-        except Exception:
-            continue
-    new_id = f"U{max_num + 1:03d}"
-
+    # Tạo user mới với uid làm key (đồng bộ với google_login)
     new_user = {
-        "id": new_id,
+        "uid": uid,
         "name": name,
         "email": email,
         "avatar_url": "",
@@ -62,6 +48,8 @@ def register():
         "history": [],
         "location": {}
     }
+    
+    users_ref = db.reference("users")
     try:
         users_ref.child(uid).set(new_user)
     except Exception as e:
