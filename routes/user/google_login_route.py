@@ -17,25 +17,29 @@ def google_login():
     try:
         idinfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
 
+        uid = idinfo.get("sub")  # Firebase UID từ Google token
         email = idinfo.get("email")
         name = idinfo.get("name")
         picture = idinfo.get("picture")
 
         users_ref = db.reference("users")
-        users = users_ref.get() or {}
+        
+        # Kiểm tra user đã tồn tại chưa (dùng uid làm key)
+        user_data = users_ref.child(uid).get()
 
-        existing_user = None
-        for user_id, user_data in users.items():
-            if user_data.get("email") == email:
-                existing_user = (user_id, user_data)
-                break
-
-        if existing_user:
-            user_id, user_data = existing_user
+        if user_data:
+            # User đã tồn tại, cập nhật thông tin nếu cần
+            if user_data.get("name") != name or user_data.get("avatar_url") != picture:
+                users_ref.child(uid).update({
+                    "name": name,
+                    "avatar_url": picture or ""
+                })
+                user_data["name"] = name
+                user_data["avatar_url"] = picture or ""
         else:
-            new_id = f"U{len(users) + 1:03d}" # Lấy id cuối +1
+            # Tạo user mới với uid làm key
             new_user = {
-                "id": new_id,
+                "uid": uid,
                 "name": name,
                 "email": email,
                 "avatar_url": picture or "",
@@ -43,9 +47,8 @@ def google_login():
                 "history": [],
                 "location": {}
             }
-            users_ref.child(new_id).set(new_user)
+            users_ref.child(uid).set(new_user)
             user_data = new_user
-            user_id = new_id
 
         return jsonify({
             "success": True,
