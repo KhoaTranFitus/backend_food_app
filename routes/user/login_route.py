@@ -1,49 +1,60 @@
 from flask import request, jsonify
-from . import user_bp  # Import blueprint
-import requests
-# Import các biến và dịch vụ đã khởi tạo từ 'core'
-from core.auth_service import API_KEY, auth
+from firebase_admin import auth, db
+from . import user_bp
+from core.auth_service import API_KEY
 
-@user_bp.route('/login', methods=['POST'])
+@user_bp.route("/login", methods=["POST"])
 def login():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    
-    payload = {
-        "email": email,
-        "password": password,
-        "returnSecureToken": True
-    }
-    response = requests.post(
-        f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
-        json=payload
-    )
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
 
-    if response.status_code == 200:
-        res_data = response.json()
+    if not email or not password:
+        return jsonify({"error": "Thiếu email hoặc mật khẩu"}), 400
+
+    try:
         user = auth.get_user_by_email(email)
 
-        # Nếu chưa xác thực email thì chặn người dùng đăng nhập
         if not user.email_verified:
-            return jsonify({
-                "error": "Tài khoản chưa được xác thực email. Vui lòng kiểm tra hộp thư của bạn."
-            }), 403
+            return jsonify({"error": "Email chưa được xác thực. Vui lòng kiểm tra email của bạn."}), 403
+
+        # Kiểm tra mật khẩu bằng Firebase Auth REST API
+        import requests
+
+        verify_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
+
+        payload = {
+            "email": email,
+            "password": password,
+            "returnSecureToken": True
+        }
+
+        response = requests.post(verify_url, json=payload)
+        result = response.json()
+
+        if "error" in result:
+            return jsonify({"error": "Sai email hoặc mật khẩu"}), 401
+
+        users_ref = db.reference("users")
+        users = users_ref.get() or {}
+
+        user_data = None
+        for uid, info in users.items():
+            if info.get("email") == email:
+                user_data = info
+                break
+
+        if not user_data:
+            return jsonify({"error": "Email không tồn tại"}), 404
 
         return jsonify({
             "message": "Đăng nhập thành công!",
-            "idToken": res_data.get("idToken"),
-            "email": res_data.get("email")
-        })
-    # Phần này là để chuyển đổi tin nhắn báo lỗi của Firebase sang tiếng Việt
-    else:
-        error_code = response.json().get("error", {}).get("message", "")
-        decoded_message = {
-            "INVALID_EMAIL": "Email không hợp lệ.",
-            "INVALID_LOGIN_CREDENTIALS": "Sai email hoặc mật khẩu.",
-            "EMAIL_NOT_FOUND": "Email không tồn tại.",
-            "INVALID_PASSWORD": "Sai mật khẩu.",
-            "USER_DISABLED": "Tài khoản đã bị vô hiệu hóa."
-        }.get(error_code, "Đăng nhập thất bại, vui lòng thử lại.")
-        
-        return jsonify({"error": decoded_message}), 400
+            "user": user_data,
+            "idToken": result.get("idToken")
+        }), 200
+
+    except auth.UserNotFoundError:
+        return jsonify({"error": "Email không tồn tại"}), 404
+    except Exception as e:
+        return jsonify({"error": f"Lỗi máy chủ: {e}"}), 500
+
