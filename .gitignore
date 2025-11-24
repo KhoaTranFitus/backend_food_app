@@ -1,0 +1,28 @@
+# --- Bí Mật & Credentials ---
+# Ẩn file biến môi trường
+.env
+
+# Ẩn các file service account key (ví dụ: Firebase, Google Cloud)
+*-firebase-adminsdk-*.json
+
+# --- Python ---
+# Bỏ qua các thư mục cache do Python tự tạo
+__pycache__/
+*.pyc
+
+# Bỏ qua thư mục môi trường ảo (virtual environment)
+venv/
+.venv/
+env/
+
+# --- Hệ Điều Hành (OS) ---
+.DS_Store
+Thumbs.db
+
+# --- Khác ---
+*.exe
+build/
+release/
+debug/
+
+serviceAccountKey.json

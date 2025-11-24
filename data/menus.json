@@ -1,0 +1,58 @@
+[
+  {
+    "id": 101,
+    "restaurant_id": 1,
+    "dish_name": "Phở Tái",
+    "price": 70000,
+    "description": "Thịt bò tái mềm, nước lèo đậm đà.",
+    "dish_tags": ["bò", "nước"]
+  },
+  {
+    "id": 102,
+    "restaurant_id": 1,
+    "dish_name": "Phở Nạm",
+    "price": 75000,
+    "description": "Nạm bò được hầm kỹ, béo ngậy.",
+    "dish_tags": ["bò", "nạm"]
+  },
+  {
+    "id": 103,
+    "restaurant_id": 1,
+    "dish_name": "Chén hột gà",
+    "price": 10000,
+    "description": "Trứng gà chần ăn kèm.",
+    "dish_tags": ["trứng", "ăn kèm"]
+  },
+  {
+    "id": 201,
+    "restaurant_id": 2,
+    "dish_name": "Nấm bào ngư xào",
+    "price": 120000,
+    "description": "Nấm bào ngư tươi xào cùng rau củ.",
+    "dish_tags": ["nấm", "món chính", "xào"]
+  },
+  {
+    "id": 202,
+    "restaurant_id": 2,
+    "dish_name": "Cơm gạo lứt",
+    "price": 40000,
+    "description": "Cơm gạo lứt nấu dẻo, tốt cho sức khỏe.",
+    "dish_tags": ["cơm", "gạo lứt"]
+  },
+  {
+    "id": 301,
+    "restaurant_id": 3,
+    "dish_name": "Cơm sườn bì chả",
+    "price": 60000,
+    "description": "Đĩa cơm đầy đủ sườn nướng, bì, chả trứng.",
+    "dish_tags": ["heo", "sườn", "cơm"]
+  },
+  {
+    "id": 302,
+    "restaurant_id": 3,
+    "dish_name": "Sườn cốt lết (thêm)",
+    "price": 30000,
+    "description": "Thêm một miếng sườn nướng.",
+    "dish_tags": ["heo", "sườn"]
+  }
+]
