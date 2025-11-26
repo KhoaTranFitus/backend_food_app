@@ -5,3 +5,4 @@ food_bp = Blueprint('food', __name__)
 from . import search_route
 from . import list_all_foods_route
 from . import detail_route
+from . import direction_route
