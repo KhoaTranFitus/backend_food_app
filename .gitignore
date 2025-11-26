@@ -24,3 +24,9 @@ Thumbs.db
 build/
 release/
 debug/
+
+# --- Large Data Files ---
+# Bỏ qua file OSM pbf (quá lớn cho GitHub)
+*.pbf
+*.osm.pbf
+vietnam-*.osm.pbf
