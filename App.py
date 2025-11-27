@@ -9,6 +9,7 @@ import core.database      # <- Dòng này sẽ tải JSON
 # --- IMPORT ROUTES ---
 from routes.food import food_bp
 from routes.user import user_bp 
+from routes.chatbot import chatbot_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +17,7 @@ CORS(app)
 # ... (các route và app.run) ...
 app.register_blueprint(food_bp, url_prefix='/api')
 app.register_blueprint(user_bp, url_prefix='/api')
+app.register_blueprint(chatbot_bp, url_prefix="/api")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
