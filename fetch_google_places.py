@@ -177,14 +177,8 @@ def convert_to_restaurant_format(place, category_id=1):
     elif "Đà Nẵng" in address or "Da Nang" in address:
         tags.append("Đà Nẵng")
     
-    # Get photo URL if available
-    photo_url = ""
-    photos = place.get("photos", [])
-    if photos and len(photos) > 0:
-        photo_name = photos[0].get("name", "")
-        if photo_name:
-            # New API photo URL format
-            photo_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={GOOGLE_PLACES_API_KEY}"
+    # Get photo URL if available - chỉ lưu placeholder
+    image_url = "URL:"
     
     # Get opening hours
     open_hours = "08:00-22:00"  # Default
@@ -207,7 +201,7 @@ def convert_to_restaurant_format(place, category_id=1):
         "phone_number": place.get("internationalPhoneNumber", ""),
         "open_hours": open_hours,
         "opening_hours_full": weekday_descriptions if weekday_descriptions else None,
-        "main_image_url": photo_url,
+        "image_url": image_url,
         "tags": tags
     }
     
@@ -301,7 +295,7 @@ if __name__ == "__main__":
     ]
     
     all_restaurants = []
-    output_file = "data/restaurants_google.json"
+    output_file = "data/restaurants.json"  # Ghi đè vào file chính
     
     print(f"🚀 Bắt đầu cào nhà hàng từ {len(locations)} khu vực...\n")
     
@@ -331,8 +325,8 @@ if __name__ == "__main__":
             unique_restaurants.append(r)
             seen_ids.add(r['id'])
     
-    # Merge with existing data
-    final_restaurants = merge_restaurants(output_file, unique_restaurants)
+    # Ghi đè hoàn toàn (không merge)
+    final_restaurants = unique_restaurants
     
     # Save to file
     with open(output_file, 'w', encoding='utf-8') as f:

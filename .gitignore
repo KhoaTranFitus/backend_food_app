@@ -35,3 +35,7 @@ vietnam-*.osm.pbf
 
 # Bỏ qua file CSV chứa place_id
 *.csv
+
+# Bỏ qua file JSON chứa dữ liệu nhà hàng (có thể chứa API key trong URL)
+data/restaurants_google.json
+data/restaurants_hcm.json
