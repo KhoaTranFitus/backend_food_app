@@ -1,6 +1,7 @@
 [
-  { "id": 1, "name": "Vietnamese", "color": "#FFD700", "icon": "🍜" },
-  { "id": 2, "name": "Fast Food", "color": "#FF6347", "icon": "🍔" },
-  { "id": 3, "name": "Healthy", "color": "#32CD32", "icon": "🥗" },
-  { "id": 4, "name": "Dessert", "color": "#FFB6C1", "icon": "🍰" }
+  { "id": 1, "type": "dry" },
+  { "id": 2, "type": "soup" },
+  { "id": 3, "type": "vegetarian" },
+  { "id": 4, "type": "salty" },
+  { "id": 5, "type": "seafood" }
 ]
