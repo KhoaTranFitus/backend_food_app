@@ -55,7 +55,9 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 		for restaurant in filtered_restaurants:
 			rid = str(restaurant['id'])
 			normalized_name = normalize_text(restaurant.get('name'))
-			if normalized_query in normalized_name:
+			# Tìm từ chính xác (word boundary)
+			words = normalized_name.split()
+			if normalized_query in words or normalized_query in normalized_name:
 				scores[rid] = scores.get(rid, 0) + 10  # match name: +10
 
 		# 3. Tìm trong Tags nhà hàng (ưu tiên vừa)
