@@ -1,7 +1,7 @@
 # routes/map/filter_route.py
 from flask import jsonify, request
 from routes.map import map_bp
-from core.database import restaurants_data, categories_data
+from core.database import DB_RESTAURANTS, DB_CATEGORIES
 
 @map_bp.route("/map/filter", methods=["POST"])
 def filter_map_markers():
@@ -13,11 +13,12 @@ def filter_map_markers():
         - lon: float (optional) - Kinh độ vị trí hiện tại
         - radius: float (optional) - Bán kính tìm kiếm (km), default: 10
         - categories: list[int] (optional) - Danh sách category IDs
-        - price_levels: list[int] (optional) - Danh sách price levels (1-4)
+        - min_price: int (optional) - Giá tối thiểu (VND)
+        - max_price: int (optional) - Giá tối đa (VND)
         - min_rating: float (optional) - Rating tối thiểu
         - max_rating: float (optional) - Rating tối đa
         - tags: list[str] (optional) - Danh sách tags cần filter
-        - limit: int (optional) - Số lượng kết quả tối đa, default: 100
+        - limit: int (optional) - Số lượng kết quả tối đa, default: None (không giới hạn)
     
     Returns:
         JSON với danh sách markers đã lọc
@@ -30,11 +31,40 @@ def filter_map_markers():
         user_lon = data.get('lon')
         radius = data.get('radius', 10)  # km
         filter_categories = data.get('categories', [])
-        filter_price_levels = data.get('price_levels', [])
+        min_price = data.get('min_price')  # VND
+        max_price = data.get('max_price')  # VND
         min_rating = data.get('min_rating', 0)
         max_rating = data.get('max_rating', 5)
         filter_tags = data.get('tags', [])
-        limit = data.get('limit', 100)
+        limit = data.get('limit', None)  # None = không giới hạn
+        
+        # Hàm parse price_range string thành số
+        def parse_price_range(price_range_str):
+            """
+            Parse "50,000đ-150,000đ" -> (50000, 150000)
+            Parse "300,000đ+" -> (300000, float('inf'))
+            """
+            if not price_range_str:
+                return (0, float('inf'))
+            
+            try:
+                # Remove "đ" và spaces
+                price_str = price_range_str.replace('đ', '').replace(' ', '').replace(',', '')
+                
+                if '+' in price_str:
+                    # "300000+" -> min=300000, max=inf
+                    min_val = int(price_str.replace('+', ''))
+                    return (min_val, float('inf'))
+                elif '-' in price_str:
+                    # "50000-150000" -> (50000, 150000)
+                    parts = price_str.split('-')
+                    return (int(parts[0]), int(parts[1]))
+                else:
+                    # Single value
+                    val = int(price_str)
+                    return (val, val)
+            except:
+                return (0, float('inf'))
         
         # Hàm tính khoảng cách (Haversine formula)
         def calculate_distance(lat1, lon1, lat2, lon2):
@@ -54,7 +84,7 @@ def filter_map_markers():
         # Lọc restaurants
         filtered_restaurants = []
         
-        for restaurant in restaurants_data:
+        for restaurant in DB_RESTAURANTS:
             rest_lat = restaurant.get('lat')
             rest_lon = restaurant.get('lon')
             
@@ -73,9 +103,16 @@ def filter_map_markers():
             if filter_categories and restaurant.get('category_id') not in filter_categories:
                 continue
             
-            # Filter by price level
-            if filter_price_levels and restaurant.get('price_level') not in filter_price_levels:
-                continue
+            # Filter by price range
+            if min_price is not None or max_price is not None:
+                price_range = restaurant.get('price_range', '')
+                rest_min, rest_max = parse_price_range(price_range)
+                
+                # Kiểm tra overlap: restaurant price range có giao với filter range không
+                if min_price is not None and rest_max < min_price:
+                    continue
+                if max_price is not None and rest_min > max_price:
+                    continue
             
             # Filter by rating
             rating = restaurant.get('rating', 0)
@@ -88,16 +125,31 @@ def filter_map_markers():
                 if not any(tag in restaurant_tags for tag in filter_tags):
                     continue
             
-            # Tạo marker object
+            # Tạo marker object với format frontend expect
+            category_id = restaurant.get('category_id', 1)
+            
+            # Map category_id sang dishType và pinColor
+            category_map = {
+                1: {"dishType": "dry", "pinColor": "red"},
+                2: {"dishType": "soup", "pinColor": "blue"},
+                3: {"dishType": "vegetarian", "pinColor": "green"},
+                4: {"dishType": "salty", "pinColor": "orange"},
+                5: {"dishType": "seafood", "pinColor": "purple"}
+            }
+            category_info = category_map.get(category_id, {"dishType": "dry", "pinColor": "red"})
+            
             marker = {
                 "id": restaurant.get('id'),
                 "name": restaurant.get('name'),
-                "lat": rest_lat,
-                "lon": rest_lon,
-                "rating": rating,
-                "price_level": restaurant.get('price_level'),
-                "category_id": restaurant.get('category_id'),
                 "address": restaurant.get('address'),
+                "position": {
+                    "lat": rest_lat,
+                    "lon": rest_lon
+                },
+                "dishType": category_info["dishType"],
+                "pinColor": category_info["pinColor"],
+                "rating": rating,
+                "price_range": restaurant.get('price_range'),
                 "phone_number": restaurant.get('phone_number'),
                 "open_hours": restaurant.get('open_hours'),
                 "main_image_url": restaurant.get('main_image_url'),
@@ -108,34 +160,30 @@ def filter_map_markers():
             if distance is not None:
                 marker['distance'] = round(distance, 2)
             
-            # Thêm category info
-            category = next((c for c in categories_data if c['id'] == restaurant.get('category_id')), None)
-            if category:
-                marker['category_name'] = category.get('name')
-                marker['category_icon'] = category.get('icon')
-            
             filtered_restaurants.append(marker)
         
         # Sắp xếp theo khoảng cách nếu có vị trí người dùng
         if user_lat and user_lon:
             filtered_restaurants.sort(key=lambda x: x.get('distance', float('inf')))
         
-        # Giới hạn số lượng kết quả
-        filtered_restaurants = filtered_restaurants[:limit]
+        # Giới hạn số lượng kết quả nếu có limit
+        if limit is not None:
+            filtered_restaurants = filtered_restaurants[:limit]
         
         return jsonify({
             "success": True,
             "total": len(filtered_restaurants),
+            "places": filtered_restaurants,
             "filters_applied": {
                 "has_location": user_lat is not None and user_lon is not None,
                 "radius_km": radius if user_lat and user_lon else None,
                 "categories": filter_categories,
-                "price_levels": filter_price_levels,
+                "min_price": min_price,
+                "max_price": max_price,
                 "min_rating": min_rating,
                 "max_rating": max_rating,
                 "tags": filter_tags
-            },
-            "data": filtered_restaurants
+            }
         }), 200
         
     except Exception as e:
