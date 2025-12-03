@@ -1,25 +1,43 @@
 from flask import Flask
 from flask_cors import CORS
+import os
 
 # --- IMPORT KHỞI TẠO ---
-# (Import 2 file này sẽ chạy code bên trong chúng 1 lần duy nhất)
-import core.auth_service  # <- Dòng này sẽ khởi tạo Firebase
-import core.database      # <- Dòng này sẽ tải JSON
+import core.auth_service     # Firebase init
+import core.database         # Load JSON
 
 # --- IMPORT ROUTES ---
 from routes.food import food_bp
-from routes.user import user_bp 
+from routes.user import user_bp
 from routes.chatbot import chatbot_bp
 from routes.map import map_bp
+from routes.food.restaurants_route import restaurants_bp
 
-app = Flask(__name__)
+
+# ------------------------------
+# TẠO APP + HỖ TRỢ STATIC IMAGE
+# ------------------------------
+app = Flask(
+    __name__,
+    static_folder="static",            # <- Quan trọng để load ảnh
+    static_url_path="/static"          # <- URL cho ảnh
+)
 CORS(app)
 
-# ... (các route và app.run) ...
-app.register_blueprint(food_bp, url_prefix='/api')
-app.register_blueprint(user_bp, url_prefix='/api')
+
+# ------------------------------
+# ĐĂNG KÝ ROUTES
+# ------------------------------
+app.register_blueprint(food_bp, url_prefix="/api")
+app.register_blueprint(user_bp, url_prefix="/api")
 app.register_blueprint(chatbot_bp, url_prefix="/api")
 app.register_blueprint(map_bp, url_prefix="/api")
+app.register_blueprint(restaurants_bp, url_prefix="/api")
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+# ------------------------------
+# CHẠY SERVER (Railway yêu cầu)
+# ------------------------------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))   # <- Railway TỰ CẤP port
+    app.run(host="0.0.0.0", port=port)

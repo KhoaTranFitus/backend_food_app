@@ -19,7 +19,7 @@
       "Saturday: 9:30 AM – 2:00 AM",
       "Sunday: 9:30 AM – 2:00 AM"
     ],
-    "image_url": "URL:",
+    "image_url": "/static/images/restaurants/Haidilao_Vanhanh.jpg",
     "tags": [
       "restaurant",
       "TP. Hồ Chí Minh"
@@ -175,7 +175,7 @@
       "Saturday: 8:00 AM – 9:00 PM",
       "Sunday: 8:00 AM – 9:00 PM"
     ],
-    "image_url": "URL:",
+    "image_url": "/static/images/restaurants/Jolibee.webp",
     "tags": [
       "restaurant",
       "TP. Hồ Chí Minh"
@@ -227,7 +227,7 @@
       "Saturday: 7:00 AM – 9:00 PM",
       "Sunday: 7:00 AM – 9:00 PM"
     ],
-    "image_url": "URL:",
+    "image_url": "/static/images/placeholders/OIP.webp",
     "tags": [
       "restaurant",
       "TP. Hồ Chí Minh"
