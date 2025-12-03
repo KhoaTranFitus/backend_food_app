@@ -36,17 +36,14 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 	# 1. Lọc theo province trước (nếu có)
 	filtered_restaurants = restaurants_db
 	if normalized_province:
-		# Tìm tên tỉnh/thành phố ở cuối địa chỉ (sau dấu phẩy cuối)
+		# Lọc theo tên thành phố trong địa chỉ
+		# VD: "Thành phố Hồ Chí Minh", "Hà Nội", "Đà Nẵng"
 		filtered_restaurants = []
 		for r in restaurants_db:
-			address = r.get('address', '')
-			# Lấy phần cuối của địa chỉ (thường là tỉnh/thành phố)
-			# VD: "413-415 Nguyễn Trãi, Phường 7, Quận 5, TP. HCM" -> "TP. HCM"
-			if address:
-				parts = [p.strip() for p in address.split(',')]
-				city = parts[-1] if parts else ''
-				if normalized_province in normalize_text(city):
-					filtered_restaurants.append(r)
+			address = normalize_text(r.get('address', ''))
+			# Kiểm tra nếu province xuất hiện trong địa chỉ
+			if normalized_province in address:
+				filtered_restaurants.append(r)
 	
 	# Nếu không có query text, trả về tất cả nhà hàng đã lọc theo province
 	if not normalized_query:
@@ -58,7 +55,9 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 		for restaurant in filtered_restaurants:
 			rid = str(restaurant['id'])
 			normalized_name = normalize_text(restaurant.get('name'))
-			if normalized_query in normalized_name:
+			# Tìm từ chính xác (word boundary)
+			words = normalized_name.split()
+			if normalized_query in words or normalized_query in normalized_name:
 				scores[rid] = scores.get(rid, 0) + 10  # match name: +10
 
 		# 3. Tìm trong Tags nhà hàng (ưu tiên vừa)
