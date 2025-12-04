@@ -11,6 +11,7 @@ def search_food():
 	"""
 	try:
 		data = request.get_json(force=True, silent=True)
+		
 		if not data:
 			return jsonify({"error": "Request body phải là JSON, ví dụ: { 'query': 'từ khóa', 'province': 'Quận 1', 'lat': 10.7812, 'lon': 106.6942 }"}), 400
 		
@@ -32,6 +33,15 @@ def search_food():
 				user_lon = None
 		
 		# Gọi search algorithm với các tham số mới
+		print("--- BẮT ĐẦU DEBUG REQUEST ---")
+		print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
+		print(f"2. Input nhận được: Query={query}, Province={province}")
+        
+        # In thử quán đầu tiên để xem cấu trúc
+		if len(DB_RESTAURANTS) > 0:
+			print(f"3. Quán mẫu đầu tiên: {DB_RESTAURANTS[0].get('name')} - ID: {DB_RESTAURANTS[0].get('id')}")
+		else:
+			print("3. CẢNH BÁO: DB_RESTAURANTS đang rỗng! Kiểm tra lại file json.")
 		results = search_algorithm(
 			query, 
 			DB_RESTAURANTS, 
