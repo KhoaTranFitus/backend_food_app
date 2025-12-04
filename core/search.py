@@ -3,13 +3,84 @@ import unicodedata
 from math import radians, sin, cos, sqrt, atan2
 
 def normalize_text(text):
+	"""Normalize text - giữ nguyên dấu tiếng Việt để search chính xác hơn"""
 	if not text:
 		return ""
-	text = text.lower()
-	text = unicodedata.normalize('NFD', text)\
-					  .encode('ascii', 'ignore')\
-					  .decode('utf-8')
-	return text
+	return text.lower().strip()
+
+# Mapping từ tiếng Anh sang tiếng Việt cho tags
+ENGLISH_TO_VIETNAMESE_TAGS = {
+	# Provinces
+	"ho chi minh": "TP. Hồ Chí Minh",
+	"saigon": "TP. Hồ Chí Minh",
+	"hcmc": "TP. Hồ Chí Minh",
+	"hanoi": "Hà Nội",
+	"ha noi": "Hà Nội",
+	"da nang": "Đà Nẵng",
+	"danang": "Đà Nẵng",
+	"da lat": "Lâm Đồng",
+	"dalat": "Lâm Đồng",
+	"nha trang": "Khánh Hòa",
+	"vung tau": "Bà Rịa - Vũng Tàu",
+	"hoi an": "Quảng Nam",
+	"hue": "Thừa Thiên Huế",
+	"can tho": "Cần Thơ",
+	"phu quoc": "Kiên Giang",
+	"quy nhon": "Bình Định",
+	"ha long": "Quảng Ninh",
+	"phan thiet": "Bình Thuận",
+	"buon ma thuot": "Đắk Lắk",
+	"sapa": "Lào Cai",
+	"sa pa": "Lào Cai",
+	"hai phong": "Hải Phòng",
+	"ninh binh": "Ninh Bình",
+	
+	# Food types
+	"seafood": "Hải Sản",
+	"vegetarian": "Chay",
+	"vegan": "Chay",
+	"bbq": "BBQ",
+	"hotpot": "Lẩu",
+	"noodles": "Phở/Bún",
+	"pho": "Phở/Bún",
+	"rice": "Cơm",
+	"coffee": "Cà Phê",
+	"cafe": "Cà Phê",
+	"dessert": "Tráng Miệng",
+	"cake": "Tráng Miệng",
+	"pizza": "Pizza",
+	"sushi": "Sushi",
+	"ramen": "Ramen",
+	"burger": "Burger",
+	"fast food": "Fast Food",
+	"steak": "Bít Tết",
+	"buffet": "Buffet",
+	"dimsum": "Dimsum",
+	"bar": "Quán Bar",
+	"restaurant": "Nhà Hàng",
+	
+	# Cuisine
+	"chinese": "Món Trung",
+	"japanese": "Món Nhật",
+	"korean": "Món Hàn",
+	"vietnamese": "Món Việt",
+	"thai": "Món Thái",
+	"american": "Món Mỹ",
+	"italian": "Món Ý",
+	"french": "Món Pháp",
+	"indian": "Món Ấn",
+	
+	# Price
+	"cheap": "Giá Rẻ",
+	"expensive": "Sang Trọng",
+	"luxury": "Sang Trọng",
+	"fine dining": "Cao Cấp",
+}
+
+def translate_query(query):
+	"""Translate English query to Vietnamese tags if possible"""
+	normalized = normalize_text(query)
+	return ENGLISH_TO_VIETNAMESE_TAGS.get(normalized, query)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
 	"""Tính khoảng cách giữa 2 điểm (km) dùng Haversine formula."""
@@ -29,20 +100,29 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=None, user_lon=None):
 	"""Tìm kiếm nhà hàng theo query, province, và sắp xếp theo khoảng cách nếu có tọa độ."""
 	normalized_query = normalize_text(query) if query else ""
-	normalized_province = normalize_text(province) if province else ""
+	
+	# Translate English query to Vietnamese if possible
+	if normalized_query:
+		translated = translate_query(normalized_query)
+		if translated != normalized_query:
+			normalized_query = normalize_text(translated)
 	
 	scores = {}  # restaurant_id: score
 	distances = {}  # restaurant_id: distance (km)
-	# 1. Lọc theo province trước (nếu có)
+	
+	# 1. Lọc theo province trước (nếu có) - FILTER BY TAGS
 	filtered_restaurants = restaurants_db
-	if normalized_province:
-		# Lọc theo tên thành phố trong địa chỉ
-		# VD: "Thành phố Hồ Chí Minh", "Hà Nội", "Đà Nẵng"
+	if province:
+		# Translate province từ tiếng Anh sang tiếng Việt nếu cần
+		province_tag = translate_query(province)
+		normalized_province = normalize_text(province_tag)
+		
+		# Lọc theo province tag (chính xác hơn là lọc theo address)
 		filtered_restaurants = []
 		for r in restaurants_db:
-			address = normalize_text(r.get('address', ''))
-			# Kiểm tra nếu province xuất hiện trong địa chỉ
-			if normalized_province in address:
+			# Kiểm tra trong tags
+			restaurant_tags = [normalize_text(tag) for tag in r.get('tags', [])]
+			if any(normalized_province in tag or tag in normalized_province for tag in restaurant_tags):
 				filtered_restaurants.append(r)
 	
 	# Nếu không có query text, trả về tất cả nhà hàng đã lọc theo province
@@ -64,7 +144,8 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 		for restaurant in filtered_restaurants:
 			rid = str(restaurant['id'])
 			normalized_tags = [normalize_text(tag) for tag in restaurant.get('tags', [])]
-			if any(normalized_query in tag for tag in normalized_tags):
+			# Match exact tag hoặc tag chứa query
+			if any(normalized_query == tag or normalized_query in tag or tag in normalized_query for tag in normalized_tags):
 				scores[rid] = scores.get(rid, 0) + 5  # match tag: +5
 
 		# 4. Tìm trong Tên món ăn (ưu tiên thấp hơn)
