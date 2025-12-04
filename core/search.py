@@ -48,6 +48,16 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 	# Nếu không có query text, trả về tất cả nhà hàng đã lọc theo province
 	if not normalized_query:
 		for restaurant in filtered_restaurants:
+			# 🔥 LỌC THEO BÁN KÍNH (2km)
+			if user_lat and user_lon:
+				d = calculate_distance(
+					user_lat,
+					user_lon,
+					restaurant.get('lat'),
+					restaurant.get('lon')
+				)
+				if d is None or d > 2:   # 🔥 chỉ giữ quán trong bán kính 2km
+					continue
 			rid = str(restaurant['id'])
 			scores[rid] = 1  # điểm cơ bản
 	else:
