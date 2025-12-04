@@ -10,14 +10,27 @@ def normalize_text(text):
 
 # Mapping từ tiếng Anh sang tiếng Việt cho tags
 ENGLISH_TO_VIETNAMESE_TAGS = {
-	# Provinces
+	# Provinces - Ho Chi Minh City variations
 	"ho chi minh": "TP. Hồ Chí Minh",
 	"saigon": "TP. Hồ Chí Minh",
 	"hcmc": "TP. Hồ Chí Minh",
+	"tp.hcm": "TP. Hồ Chí Minh",
+	"tp hcm": "TP. Hồ Chí Minh",
+	"tp. hcm": "TP. Hồ Chí Minh",
+	"tphcm": "TP. Hồ Chí Minh",
+	"tp.ho chi minh": "TP. Hồ Chí Minh",
+	"sai gon": "TP. Hồ Chí Minh",
+	"sài gòn": "TP. Hồ Chí Minh",
+	
+	# Hanoi variations
 	"hanoi": "Hà Nội",
 	"ha noi": "Hà Nội",
+	"hà nội": "Hà Nội",
+	
+	# Da Nang variations
 	"da nang": "Đà Nẵng",
 	"danang": "Đà Nẵng",
+	"đà nẵng": "Đà Nẵng",
 	"da lat": "Lâm Đồng",
 	"dalat": "Lâm Đồng",
 	"nha trang": "Khánh Hòa",
