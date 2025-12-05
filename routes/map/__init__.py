@@ -5,3 +5,4 @@ map_bp = Blueprint('map', __name__)
 
 # Import các route con
 from . import filter_route
+from . import route_route
