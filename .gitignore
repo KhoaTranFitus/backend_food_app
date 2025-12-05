@@ -6,6 +6,7 @@ File.env
 # Ẩn các file service account key (ví dụ: Firebase, Google Cloud)
 *-firebase-adminsdk-*.json
 serviceAccountKey.json
+firebase_auth.json
 
 # --- Python ---
 # Bỏ qua các thư mục cache do Python tự tạo
