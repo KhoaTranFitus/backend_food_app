@@ -20,6 +20,7 @@ def search_food():
 	"""
 	try:
 		data = request.get_json(force=True, silent=True)
+		
 		if not data:
 			data = {}
 		
@@ -40,50 +41,18 @@ def search_food():
 				user_lon = float(user_lon)
 			except (ValueError, TypeError):
 				user_lon = None
-		
-		# Parse filter parameters
-		radius = data.get('radius')
-		if radius is not None:
-			try:
-				radius = float(radius)
-			except (ValueError, TypeError):
-				radius = None
-		
-		categories = data.get('categories')  # None or list[int]
-		
-		min_price = data.get('min_price')
-		if min_price is not None:
-			try:
-				min_price = int(min_price)
-			except (ValueError, TypeError):
-				min_price = None
-		
-		max_price = data.get('max_price')
-		if max_price is not None:
-			try:
-				max_price = int(max_price)
-			except (ValueError, TypeError):
-				max_price = None
-		
-		min_rating = data.get('min_rating')
-		if min_rating is not None:
-			try:
-				min_rating = float(min_rating)
-			except (ValueError, TypeError):
-				min_rating = None
-		
-		max_rating = data.get('max_rating')
-		if max_rating is not None:
-			try:
-				max_rating = float(max_rating)
-			except (ValueError, TypeError):
-				max_rating = None
-		
-		tags = data.get('tags', [])
-		if not isinstance(tags, list):
-			tags = []
-		
-		# Gọi search algorithm với tất cả tham số
+
+		# Gọi search algorithm với các tham số mới
+		print("--- BẮT ĐẦU DEBUG REQUEST ---")
+		print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
+		print(f"2. Input nhận được: Query={query}, Province={province}")
+        
+        # In thử quán đầu tiên để xem cấu trúc
+		if len(DB_RESTAURANTS) > 0:
+			print(f"3. Quán mẫu đầu tiên: {DB_RESTAURANTS[0].get('name')} - ID: {DB_RESTAURANTS[0].get('id')}")
+		else:
+			print("3. CẢNH BÁO: DB_RESTAURANTS đang rỗng! Kiểm tra lại file json.")
+
 		results = search_algorithm(
 			query, 
 			DB_RESTAURANTS, 
