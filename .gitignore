@@ -35,3 +35,4 @@ vietnam-*.osm.pbf
 
 # Bỏ qua file CSV chứa place_id
 *.csv
+
