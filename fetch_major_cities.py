@@ -1,4 +1,4 @@
-# scripts/fetch_google_places.py
+# scripts/fetch_major_cities.py
 import requests
 import json
 import os
@@ -9,7 +9,7 @@ import time
 load_dotenv('File.env')
 GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 
-def fetch_nearby_restaurants(lat, lon, radius=5000, keyword="restaurant"):
+def fetch_nearby_restaurants(lat, lon, radius=5000):
     """
     Fetch restaurants from Google Places API (New)
     
@@ -17,12 +17,10 @@ def fetch_nearby_restaurants(lat, lon, radius=5000, keyword="restaurant"):
         lat: Latitude
         lon: Longitude
         radius: Search radius in meters (default 5000m = 5km)
-        keyword: Search keyword (default "restaurant")
     
     Returns:
         List of restaurant data
     """
-    # Use Places API (New) - Text Search endpoint
     url = "https://places.googleapis.com/v1/places:searchNearby"
     
     headers = {
@@ -76,41 +74,11 @@ def fetch_nearby_restaurants(lat, lon, radius=5000, keyword="restaurant"):
         else:
             error_msg = data.get("error", {}).get("message", "Unknown error")
             print(f"❌ Error: {error_msg}")
-            print(f"Full response: {json.dumps(data, indent=2)}")
     
     except Exception as e:
         print(f"❌ Exception: {str(e)}")
     
     return all_results
-
-def get_place_details(place_id):
-    """
-    Get detailed information about a place
-    
-    Args:
-        place_id: Google Place ID
-    
-    Returns:
-        Detailed place information
-    """
-    url = "https://maps.googleapis.com/maps/api/place/details/json"
-    
-    params = {
-        "place_id": place_id,
-        "fields": "name,formatted_address,formatted_phone_number,opening_hours,website,price_level,rating,user_ratings_total,photos,types",
-        "key": GOOGLE_PLACES_API_KEY
-    }
-    
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        
-        if data.get("status") == "OK":
-            return data.get("result", {})
-    except Exception as e:
-        print(f"❌ Error fetching details for {place_id}: {str(e)}")
-    
-    return {}
 
 def convert_to_restaurant_format(place, category_id=1):
     """
@@ -154,8 +122,6 @@ def convert_to_restaurant_format(place, category_id=1):
         rating = 4.0
     
     # Get price range based on Google's priceLevel
-    # New API: PRICE_LEVEL_UNSPECIFIED, PRICE_LEVEL_FREE, PRICE_LEVEL_INEXPENSIVE, 
-    #          PRICE_LEVEL_MODERATE, PRICE_LEVEL_EXPENSIVE, PRICE_LEVEL_VERY_EXPENSIVE
     price_level_str = place.get("priceLevel", "PRICE_LEVEL_MODERATE")
     price_ranges = {
         "PRICE_LEVEL_FREE": "0đ-20,000đ",
@@ -165,10 +131,13 @@ def convert_to_restaurant_format(place, category_id=1):
         "PRICE_LEVEL_VERY_EXPENSIVE": "300,000đ+",
         "PRICE_LEVEL_UNSPECIFIED": "50,000đ-150,000đ"
     }
-    price_range = price_ranges.get(price_level_str, "50,000đ - 150,000đ")
+    price_range = price_ranges.get(price_level_str, "50,000đ-150,000đ")
     
-    # Extract tags từ types của Google Places
+    # Extract tags
     tags = []
+    
+    # Address
+    address = place.get("formattedAddress", "")
     
     # 1. Thêm tags từ types (loại hình nhà hàng)
     type_to_tag = {
@@ -178,9 +147,6 @@ def convert_to_restaurant_format(place, category_id=1):
         "bakery": "Tiệm Bánh",
         "meal_takeaway": "Mang Đi",
         "meal_delivery": "Giao Hàng",
-        "night_club": "Hộp Đêm",
-        "food": "Đồ Ăn",
-        # Cuisine types
         "chinese_restaurant": "Món Trung",
         "japanese_restaurant": "Món Nhật",
         "korean_restaurant": "Món Hàn",
@@ -197,18 +163,9 @@ def convert_to_restaurant_format(place, category_id=1):
         "pizza_restaurant": "Pizza",
         "sushi_restaurant": "Sushi",
         "ramen_restaurant": "Ramen",
-        "noodle_house": "Mì",
-        "sandwich_shop": "Bánh Mì",
-        "ice_cream_shop": "Kem",
-        "coffee_shop": "Cà Phê",
-        "brunch_restaurant": "Brunch",
-        "breakfast_restaurant": "Bữa Sáng",
-        "lunch_restaurant": "Bữa Trưa",
-        "dinner_theater": "Bữa Tối",
+        "barbecue_restaurant": "BBQ",
         "fine_dining_restaurant": "Cao Cấp",
-        "family_restaurant": "Gia Đình",
-        "buffet_restaurant": "Buffet",
-        "barbecue_restaurant": "BBQ"
+        "buffet_restaurant": "Buffet"
     }
     
     for place_type in types:
@@ -218,16 +175,38 @@ def convert_to_restaurant_format(place, category_id=1):
                 tags.append(tag)
     
     # 2. Thêm tag province
-    address = place.get("formattedAddress", "")
-    if "Hồ Chí Minh" in address or "Ho Chi Minh" in address or "Saigon" in address:
-        tags.append("TP. Hồ Chí Minh")
-    elif "Hà Nội" in address or "Hanoi" in address:
-        tags.append("Hà Nội")
-    elif "Đà Nẵng" in address or "Da Nang" in address:
-        tags.append("Đà Nẵng")
+    province_map = {
+        "Hồ Chí Minh": "TP. Hồ Chí Minh",
+        "Ho Chi Minh": "TP. Hồ Chí Minh",
+        "Saigon": "TP. Hồ Chí Minh",
+        "Hà Nội": "Hà Nội",
+        "Hanoi": "Hà Nội",
+        "Đà Nẵng": "Đà Nẵng",
+        "Da Nang": "Đà Nẵng",
+        "Đà Lạt": "Lâm Đồng",
+        "Da Lat": "Lâm Đồng",
+        "Nha Trang": "Khánh Hòa",
+        "Vũng Tàu": "Bà Rịa - Vũng Tàu",
+        "Vung Tau": "Bà Rịa - Vũng Tàu",
+        "Hội An": "Quảng Nam",
+        "Hoi An": "Quảng Nam",
+        "Huế": "Thừa Thiên Huế",
+        "Hue": "Thừa Thiên Huế",
+        "Cần Thơ": "Cần Thơ",
+        "Can Tho": "Cần Thơ",
+        "Phú Quốc": "Kiên Giang",
+        "Phu Quoc": "Kiên Giang",
+        "Quy Nhơn": "Bình Định",
+        "Quy Nhon": "Bình Định"
+    }
     
-    # 3. Thêm tag từ tên nhà hàng (tự động phát hiện từ khóa)
-    name_lower = name.lower()
+    for key, value in province_map.items():
+        if key in address:
+            if value not in tags:
+                tags.append(value)
+            break
+    
+    # 3. Thêm tag từ tên nhà hàng
     keyword_tags = {
         "phở": "Phở/Bún",
         "pho": "Phở/Bún",
@@ -237,9 +216,7 @@ def convert_to_restaurant_format(place, category_id=1):
         "rice": "Cơm",
         "bánh": "Tráng Miệng",
         "cake": "Tráng Miệng",
-        "bakery": "Tráng Miệng",
         "dessert": "Tráng Miệng",
-        "ice cream": "Tráng Miệng",
         "kem": "Tráng Miệng",
         "lẩu": "Lẩu",
         "hotpot": "Lẩu",
@@ -256,49 +233,33 @@ def convert_to_restaurant_format(place, category_id=1):
         "ramen": "Ramen",
         "pizza": "Pizza",
         "burger": "Fast Food",
-        "fast food": "Fast Food",
-        "mcdonald": "Fast Food",
-        "kfc": "Fast Food",
-        "lotteria": "Fast Food",
-        "jollibee": "Fast Food",
         "steak": "Bít Tết",
         "coffee": "Cà Phê",
-        "cafe": "Cà Phê",
-        "highlands": "Cà Phê",
-        "starbucks": "Cà Phê"
+        "cafe": "Cà Phê"
     }
     
     for keyword, tag in keyword_tags.items():
         if keyword in name_lower and tag not in tags:
             tags.append(tag)
     
-    # 4. Thêm tag giá dựa trên price_level
-    price_level_str = place.get("priceLevel", "PRICE_LEVEL_MODERATE")
+    # 4. Thêm tag giá
     if price_level_str in ["PRICE_LEVEL_FREE", "PRICE_LEVEL_INEXPENSIVE"]:
         tags.append("Giá Rẻ")
     elif price_level_str in ["PRICE_LEVEL_EXPENSIVE", "PRICE_LEVEL_VERY_EXPENSIVE"]:
         tags.append("Sang Trọng")
     
-    # 5. Thêm tag "Đặc sản" nếu có từ khóa đặc biệt
+    # 5. Thêm tag "Đặc sản"
     specialty_keywords = ["đặc sản", "specialty", "authentic", "truyền thống", "traditional"]
     for keyword in specialty_keywords:
         if keyword in name_lower:
             tags.append("Đặc Sản")
             break
     
-    # 6. Thêm tag "Sang Trọng" nếu có từ fine dining hoặc high-end
-    luxury_keywords = ["fine dining", "luxury", "premium", "royal", "palace", "grand"]
-    for keyword in luxury_keywords:
-        if keyword in name_lower:
-            if "Sang Trọng" not in tags:
-                tags.append("Sang Trọng")
-            break
-    
     # Nếu không có tag nào, thêm "Nhà Hàng" mặc định
     if not tags:
         tags.append("Nhà Hàng")
     
-    # Get photo URL if available - chỉ lưu placeholder
+    # Get photo URL - chỉ lưu placeholder
     image_url = "URL:"
     
     # Get opening hours
@@ -306,7 +267,6 @@ def convert_to_restaurant_format(place, category_id=1):
     opening_hours = place.get("currentOpeningHours", {})
     weekday_descriptions = opening_hours.get("weekdayDescriptions", [])
     if weekday_descriptions and len(weekday_descriptions) > 0:
-        # Use first day's hours and remove spaces around dash
         hours = weekday_descriptions[0].split(": ", 1)[1] if ": " in weekday_descriptions[0] else "08:00-22:00"
         open_hours = hours.replace(" – ", "-").replace(" - ", "-").replace("–", "-")
     
@@ -328,126 +288,120 @@ def convert_to_restaurant_format(place, category_id=1):
     
     return restaurant
 
-def fetch_and_save_restaurants(lat, lon, radius=5000, output_file="data/restaurants_google.json"):
-    """
-    Fetch restaurants and save to JSON file
-    
-    Args:
-        lat: Latitude
-        lon: Longitude
-        radius: Search radius in meters
-        output_file: Output JSON file path
-    """
-    print(f"🔍 Fetching restaurants near ({lat}, {lon}) within {radius}m radius...")
-    
-    places = fetch_nearby_restaurants(lat, lon, radius)
-    
-    print(f"\n📊 Total places found: {len(places)}")
-    
-    restaurants = []
-    for i, place in enumerate(places, 1):
-        print(f"Processing {i}/{len(places)}: {place.get('name', 'Unknown')}")
-        restaurant = convert_to_restaurant_format(place)
-        restaurants.append(restaurant)
-    
-    # Save to JSON file
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(restaurants, f, ensure_ascii=False, indent=2)
-    
-    print(f"\n✅ Saved {len(restaurants)} restaurants to {output_file}")
-    
-    # Print statistics
-    print("\n📈 Statistics:")
-    categories = {}
-    for r in restaurants:
-        cat_id = r['category_id']
-        categories[cat_id] = categories.get(cat_id, 0) + 1
-    
-    print(f"  - Category 1 (Dry): {categories.get(1, 0)}")
-    print(f"  - Category 2 (Soup): {categories.get(2, 0)}")
-    print(f"  - Category 3 (Vegetarian): {categories.get(3, 0)}")
-    print(f"  - Category 4 (Salty): {categories.get(4, 0)}")
-    print(f"  - Category 5 (Seafood): {categories.get(5, 0)}")
-
-def merge_restaurants(existing_file, new_restaurants):
-    """Merge new restaurants with existing ones, avoiding duplicates"""
-    try:
-        with open(existing_file, 'r', encoding='utf-8') as f:
-            existing = json.load(f)
-    except FileNotFoundError:
-        existing = []
-    
-    existing_ids = {r['id'] for r in existing}
-    merged = existing.copy()
-    
-    for restaurant in new_restaurants:
-        if restaurant['id'] not in existing_ids:
-            merged.append(restaurant)
-    
-    return merged
-
 if __name__ == "__main__":
-    # Tất cả các quận/huyện của TP. Hồ Chí Minh
-    locations = [
-        {"name": "Quận 1", "lat": 10.762622, "lon": 106.660172},
-        {"name": "Quận 2", "lat": 10.782000, "lon": 106.748000},
-        {"name": "Quận 3", "lat": 10.784900, "lon": 106.687140},
-        {"name": "Quận 4", "lat": 10.762000, "lon": 106.702000},
-        {"name": "Quận 5", "lat": 10.754730, "lon": 106.663590},
-        {"name": "Quận 6", "lat": 10.747000, "lon": 106.635000},
-        {"name": "Quận 7", "lat": 10.732500, "lon": 106.717500},
-        {"name": "Quận 8", "lat": 10.736000, "lon": 106.664000},
-        {"name": "Quận 9", "lat": 10.843000, "lon": 106.792000},
-        {"name": "Quận 10", "lat": 10.773530, "lon": 106.665320},
-        {"name": "Quận 11", "lat": 10.762000, "lon": 106.645000},
-        {"name": "Quận 12", "lat": 10.868000, "lon": 106.680000},
-        {"name": "Bình Thạnh", "lat": 10.801373, "lon": 106.710600},
-        {"name": "Tân Bình", "lat": 10.799980, "lon": 106.652430},
-        {"name": "Tân Phú", "lat": 10.793000, "lon": 106.627000},
-        {"name": "Phú Nhuận", "lat": 10.797870, "lon": 106.678080},
-        {"name": "Bình Tân", "lat": 10.765000, "lon": 106.607000},
-        {"name": "Gò Vấp", "lat": 10.837730, "lon": 106.650950},
-        {"name": "Thủ Đức", "lat": 10.850000, "lon": 106.770000},
-        {"name": "Bình Chánh", "lat": 10.668000, "lon": 106.537000},
-        {"name": "Hóc Môn", "lat": 10.882000, "lon": 106.593000},
-        {"name": "Củ Chi", "lat": 10.968000, "lon": 106.492000},
-        {"name": "Nhà Bè", "lat": 10.695000, "lon": 106.733000},
-        {"name": "Cần Giờ", "lat": 10.407000, "lon": 106.955000},
+    # Các thành phố lớn của Việt Nam với tọa độ trung tâm và bán kính phù hợp
+    cities = [
+        # Hà Nội
+        {"name": "Hà Nội - Hoàn Kiếm", "lat": 21.0285, "lon": 105.8542, "radius": 3000},
+        {"name": "Hà Nội - Ba Đình", "lat": 21.0333, "lon": 105.8196, "radius": 3000},
+        {"name": "Hà Nội - Đống Đa", "lat": 21.0171, "lon": 105.8271, "radius": 3000},
+        {"name": "Hà Nội - Hai Bà Trưng", "lat": 21.0065, "lon": 105.8478, "radius": 3000},
+        {"name": "Hà Nội - Cầu Giấy", "lat": 21.0333, "lon": 105.7938, "radius": 3000},
+        {"name": "Hà Nội - Tây Hồ", "lat": 21.0717, "lon": 105.8250, "radius": 3000},
+        {"name": "Hà Nội - Long Biên", "lat": 21.0365, "lon": 105.8955, "radius": 3000},
+        {"name": "Hà Nội - Thanh Xuân", "lat": 20.9952, "lon": 105.8072, "radius": 3000},
+        
+        # Đà Nẵng
+        {"name": "Đà Nẵng - Hải Châu", "lat": 16.0544, "lon": 108.2022, "radius": 3000},
+        {"name": "Đà Nẵng - Thanh Khê", "lat": 16.0608, "lon": 108.1630, "radius": 3000},
+        {"name": "Đà Nẵng - Sơn Trà", "lat": 16.0878, "lon": 108.2433, "radius": 3000},
+        {"name": "Đà Nẵng - Ngũ Hành Sơn", "lat": 16.0000, "lon": 108.2500, "radius": 3000},
+        {"name": "Đà Nẵng - Liên Chiểu", "lat": 16.0762, "lon": 108.1476, "radius": 3000},
+        
+        # Đà Lạt
+        {"name": "Đà Lạt - Trung tâm", "lat": 11.9404, "lon": 108.4583, "radius": 4000},
+        {"name": "Đà Lạt - Hồ Xuân Hương", "lat": 11.9380, "lon": 108.4420, "radius": 3000},
+        
+        # Nha Trang
+        {"name": "Nha Trang - Trung tâm", "lat": 12.2388, "lon": 109.1967, "radius": 4000},
+        {"name": "Nha Trang - Vĩnh Nguyên", "lat": 12.2840, "lon": 109.1947, "radius": 3000},
+        {"name": "Nha Trang - Vĩnh Hòa", "lat": 12.2675, "lon": 109.1828, "radius": 3000},
+        
+        # Vũng Tàu
+        {"name": "Vũng Tàu - Trung tâm", "lat": 10.3459, "lon": 107.0843, "radius": 4000},
+        {"name": "Vũng Tàu - Bãi Sau", "lat": 10.3359, "lon": 107.0964, "radius": 3000},
+        
+        # Hội An
+        {"name": "Hội An - Phố cổ", "lat": 15.8793, "lon": 108.3350, "radius": 3000},
+        {"name": "Hội An - An Hội", "lat": 15.8838, "lon": 108.3390, "radius": 2000},
+        
+        # Huế
+        {"name": "Huế - Trung tâm", "lat": 16.4637, "lon": 107.5909, "radius": 4000},
+        {"name": "Huế - Đại Nội", "lat": 16.4670, "lon": 107.5804, "radius": 3000},
+        
+        # Cần Thơ
+        {"name": "Cần Thơ - Ninh Kiều", "lat": 10.0341, "lon": 105.7788, "radius": 4000},
+        {"name": "Cần Thơ - Cái Răng", "lat": 10.0210, "lon": 105.7706, "radius": 3000},
+        
+        # Phú Quốc
+        {"name": "Phú Quốc - Dương Đông", "lat": 10.2221, "lon": 103.9660, "radius": 4000},
+        {"name": "Phú Quốc - An Thới", "lat": 10.0344, "lon": 103.9987, "radius": 3000},
+        
+        # Quy Nhơn
+        {"name": "Quy Nhơn - Trung tâm", "lat": 13.7667, "lon": 109.2333, "radius": 4000},
+        
+        # Hạ Long
+        {"name": "Hạ Long - Bãi Cháy", "lat": 20.9519, "lon": 107.0542, "radius": 3000},
+        
+        # Phan Thiết
+        {"name": "Phan Thiết - Trung tâm", "lat": 10.9280, "lon": 108.1020, "radius": 4000},
+        
+        # Buôn Ma Thuột
+        {"name": "Buôn Ma Thuột", "lat": 12.6667, "lon": 108.0500, "radius": 4000},
+        
+        # Sa Pa
+        {"name": "Sa Pa - Trung tâm", "lat": 22.3364, "lon": 103.8438, "radius": 3000},
+        
+        # Hải Phòng
+        {"name": "Hải Phòng - Hồng Bàng", "lat": 20.8649, "lon": 106.6881, "radius": 3000},
+        {"name": "Hải Phòng - Lê Chân", "lat": 20.8449, "lon": 106.6881, "radius": 3000},
+        
+        # Ninh Bình
+        {"name": "Ninh Bình - Trung tâm", "lat": 20.2506, "lon": 105.9745, "radius": 3000},
+        {"name": "Ninh Bình - Tràng An", "lat": 20.2445, "lon": 105.8878, "radius": 3000},
     ]
     
     all_restaurants = []
-    output_file = "data/restaurants.json"  # Ghi đè vào file chính
+    output_file = "data/restaurants.json"
     
-    print(f"🚀 Bắt đầu cào nhà hàng từ {len(locations)} khu vực...\n")
+    print(f"🚀 Bắt đầu cào nhà hàng từ {len(cities)} khu vực trên toàn quốc...\n")
     
-    for i, loc in enumerate(locations, 1):
+    # Load existing restaurants
+    try:
+        with open(output_file, 'r', encoding='utf-8') as f:
+            existing_restaurants = json.load(f)
+            existing_ids = {r['id'] for r in existing_restaurants}
+            print(f"📊 Đã có {len(existing_restaurants)} nhà hàng trong database\n")
+    except FileNotFoundError:
+        existing_restaurants = []
+        existing_ids = set()
+        print("📊 Chưa có nhà hàng nào trong database\n")
+    
+    for i, city in enumerate(cities, 1):
         print(f"\n{'='*60}")
-        print(f"📍 Khu vực {i}/{len(locations)}: {loc['name']}")
+        print(f"📍 Khu vực {i}/{len(cities)}: {city['name']}")
         print(f"{'='*60}")
         
-        places = fetch_nearby_restaurants(loc['lat'], loc['lon'], radius=3000)
+        places = fetch_nearby_restaurants(city['lat'], city['lon'], radius=city['radius'])
         
+        new_count = 0
         for place in places:
-            restaurant = convert_to_restaurant_format(place)
-            all_restaurants.append(restaurant)
+            place_id = place.get("id", "")
+            if place_id not in existing_ids:
+                restaurant = convert_to_restaurant_format(place)
+                all_restaurants.append(restaurant)
+                existing_ids.add(place_id)
+                new_count += 1
         
-        print(f"✅ Đã lấy {len(places)} nhà hàng từ {loc['name']}")
+        print(f"✅ Đã lấy {len(places)} nhà hàng, {new_count} nhà hàng mới từ {city['name']}")
         
         # Delay giữa các request để tránh rate limit
-        if i < len(locations):
+        if i < len(cities):
             print("⏳ Chờ 2 giây...")
             time.sleep(2)
     
-    # Remove duplicates based on ID
-    unique_restaurants = []
-    seen_ids = set()
-    for r in all_restaurants:
-        if r['id'] not in seen_ids:
-            unique_restaurants.append(r)
-            seen_ids.add(r['id'])
-    
-    # Ghi đè hoàn toàn (không merge)
-    final_restaurants = unique_restaurants
+    # Merge with existing restaurants
+    final_restaurants = existing_restaurants + all_restaurants
     
     # Save to file
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -456,11 +410,11 @@ if __name__ == "__main__":
     print(f"\n{'='*60}")
     print(f"✅ HOÀN THÀNH!")
     print(f"{'='*60}")
-    print(f"📊 Tổng cộng: {len(unique_restaurants)} nhà hàng mới")
-    print(f"💾 Đã lưu {len(final_restaurants)} nhà hàng vào {output_file}")
+    print(f"📊 Đã thêm {len(all_restaurants)} nhà hàng mới")
+    print(f"💾 Tổng cộng {len(final_restaurants)} nhà hàng trong {output_file}")
     
     # Print statistics
-    print("\n📈 Thống kê theo danh mục:")
+    print("\n📈 Thống kê theo danh mục (tất cả nhà hàng):")
     categories = {}
     for r in final_restaurants:
         cat_id = r['category_id']
@@ -471,3 +425,17 @@ if __name__ == "__main__":
     print(f"  - Category 3 (Vegetarian): {categories.get(3, 0)}")
     print(f"  - Category 4 (Salty): {categories.get(4, 0)}")
     print(f"  - Category 5 (Seafood): {categories.get(5, 0)}")
+    
+    # Statistics by province
+    print("\n📈 Thống kê theo tỉnh thành:")
+    provinces = {}
+    for r in final_restaurants:
+        for tag in r.get('tags', []):
+            if tag in ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Lâm Đồng", "Khánh Hòa", 
+                      "Bà Rịa - Vũng Tàu", "Quảng Nam", "Thừa Thiên Huế", "Cần Thơ", 
+                      "Kiên Giang", "Bình Định"]:
+                provinces[tag] = provinces.get(tag, 0) + 1
+                break
+    
+    for province, count in sorted(provinces.items(), key=lambda x: x[1], reverse=True):
+        print(f"  - {province}: {count}")
