@@ -12,3 +12,4 @@ from . import verify_route
 from . import favorite_add_route
 from . import favorite_view_route
 from . import google_login_route
+from . import profile_route

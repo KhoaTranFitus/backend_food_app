@@ -1,7 +1,8 @@
 # routes/food/detail_route.py
 from flask import jsonify
 from routes.food import food_bp
-from core.database import RESTAURANTS_DICT, MENUS_BY_RESTAURANT_ID
+
+from core.database import RESTAURANTS, MENUS_BY_RESTAURANT_ID
 
 @food_bp.route('/detail/<int:restaurant_id>', methods=['GET'])
 def get_restaurant_detail(restaurant_id):
