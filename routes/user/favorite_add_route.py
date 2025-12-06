@@ -3,15 +3,13 @@ from firebase_admin import db
 from . import user_bp
 from core.auth_service import get_uid_from_auth_header 
 
-# ⭐️ ROUTE ĐÃ SỬA LỖI VÀ TỐI ƯU ⭐️
 @user_bp.route("/favorite/toggle-restaurant", methods=["POST"])
 def favorite_toggle_restaurant():
     # 1. Lấy user_id từ token (An toàn và bảo mật hơn)
     try:
         user_id = get_uid_from_auth_header() 
     except Exception as e:
-        # Nếu token không hợp lệ hoặc thiếu
-        return jsonify({"error": f"Unauthorized. {e}"}), 401
+        return jsonify({"error": f"Unauthorized. Vui lòng đăng nhập lại. ({e})"}), 401
 
     data = request.get_json(force=True, silent=True) or {}
     restaurant_id = data.get("restaurant_id")
@@ -19,7 +17,6 @@ def favorite_toggle_restaurant():
     if not restaurant_id:
         return jsonify({"error": "Thiếu restaurant_id"}), 400
     
-    # ⭐️ FIX LỖI: SỬ DỤNG ID DƯỚI DẠNG CHUỖI (STRING) ⭐️
     restaurant_id = str(restaurant_id).strip()
 
     user_ref = db.reference(f"users/{user_id}")
@@ -28,32 +25,37 @@ def favorite_toggle_restaurant():
     if not user_data:
         return jsonify({"error": "Không tìm thấy user"}), 404
 
-    # Lấy danh sách yêu thích hiện tại
     favorites = user_data.get("favorites", [])
-    
-    # Đảm bảo các ID trong favorites cũng là string
     favorites = [str(r) for r in favorites]
 
     if restaurant_id in favorites:
-        # Xóa khỏi danh sách yêu thích
         favorites = [r for r in favorites if r != restaurant_id]
         action = "removed"
         message = "Đã xóa nhà hàng khỏi danh sách yêu thích."
     else:
-        # Thêm vào danh sách yêu thích
         favorites.append(restaurant_id)
         action = "added"
         message = "Đã thêm nhà hàng vào danh sách yêu thích."
 
+    # ⭐️ FIX LỖI SERVER CỤC BỘ: Xóa node 'favorites' nếu danh sách rỗng ⭐️
+    data_to_update = {"favorites": favorites}
+    if not favorites:
+        # Nếu danh sách rỗng, set giá trị là None (để Firebase tự xóa key 'favorites')
+        data_to_update["favorites"] = None 
+
     # Cập nhật lại vào Firebase
     try:
-        user_ref.update({"favorites": favorites}) 
+        user_ref.update(data_to_update)
     except Exception as e:
-        return jsonify({"error": f"Lỗi khi cập nhật Firebase: {e}"}), 500
+        print(f"Lỗi cập nhật favorites: {e}")
+        # Trả về lỗi 500 chi tiết hơn
+        return jsonify({"error": f"Lỗi server cục bộ khi cập nhật database: {e}"}), 500
 
+    print(f"✅ USER FAVORITES LIST: {favorites}") 
+
+    # Trả về danh sách favorites mới
     return jsonify({
         "message": message,
         "action": action,
-        "restaurant_id": restaurant_id,
-        "favorites": favorites 
+        "favorites": favorites if favorites is not None else []
     }), 200
