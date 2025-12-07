@@ -6,18 +6,28 @@ from routes.food import food_bp
 @food_bp.route('/search', methods=['POST'])
 def search_food():
 	"""
-	API endpoint để tìm kiếm nhà hàng.
-	Frontend sẽ gửi: { "query": "từ khóa" }
+	API endpoint để tìm kiếm và lọc nhà hàng.
+	
+	Request Body:
+		- query: string (optional) - Từ khóa tìm kiếm
+		- province: string (optional) - Lọc theo tỉnh/thành phố
+		- lat, lon: float (optional) - Vị trí người dùng
+		- radius: float (optional) - Bán kính tìm kiếm (km)
+		- categories: list[int] (optional) - Lọc theo category IDs
+		- min_price, max_price: int (optional) - Khoảng giá (VND)
+		- min_rating, max_rating: float (optional) - Khoảng rating
+		- tags: list[str] (optional) - Lọc theo tags
 	"""
 	try:
 		data = request.get_json(force=True, silent=True)
 		if not data:
-			return jsonify({"error": "Request body phải là JSON, ví dụ: { 'query': 'từ khóa', 'province': 'Quận 1', 'lat': 10.7812, 'lon': 106.6942 }"}), 400
+			data = {}
 		
+		# Parse search parameters
 		query = data.get('query', '').strip() if isinstance(data.get('query'), str) else ''
 		province = data.get('province', '').strip() if isinstance(data.get('province'), str) else ''
 		
-		# Lấy tọa độ (nếu có)
+		# Parse location
 		user_lat = data.get('lat')
 		user_lon = data.get('lon')
 		if user_lat is not None:
@@ -31,16 +41,116 @@ def search_food():
 			except (ValueError, TypeError):
 				user_lon = None
 		
-		# Gọi search algorithm với các tham số mới
+		# Parse filter parameters
+		radius = data.get('radius')
+		if radius is not None:
+			try:
+				radius = float(radius)
+			except (ValueError, TypeError):
+				radius = None
+		
+		categories = data.get('categories')
+		if categories is not None and not isinstance(categories, list):
+			categories = None
+		
+		min_price = data.get('min_price')
+		if min_price is not None:
+			try:
+				min_price = int(min_price)
+			except (ValueError, TypeError):
+				min_price = None
+		
+		max_price = data.get('max_price')
+		if max_price is not None:
+			try:
+				max_price = int(max_price)
+			except (ValueError, TypeError):
+				max_price = None
+		
+		min_rating = data.get('min_rating')
+		if min_rating is not None:
+			try:
+				min_rating = float(min_rating)
+			except (ValueError, TypeError):
+				min_rating = None
+		
+		max_rating = data.get('max_rating')
+		if max_rating is not None:
+			try:
+				max_rating = float(max_rating)
+			except (ValueError, TypeError):
+				max_rating = None
+		
+		tags = data.get('tags')
+		if tags is not None and not isinstance(tags, list):
+			tags = None
+
+		# Debug logging
+		print("--- BẮT ĐẦU DEBUG REQUEST ---")
+		print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
+		print(f"2. Input: Query={query}, Province={province}")
+		print(f"3. Location: lat={user_lat}, lon={user_lon}, radius={radius}")
+		print(f"4. Filters: categories={categories}, price={min_price}-{max_price}, rating={min_rating}-{max_rating}")
+
 		results = search_algorithm(
 			query, 
 			DB_RESTAURANTS, 
 			MENUS_BY_RESTAURANT_ID,
 			province=province,
 			user_lat=user_lat,
-			user_lon=user_lon
+			user_lon=user_lon,
+			radius=radius,
+			categories=categories,
+			min_price=min_price,
+			max_price=max_price,
+			min_rating=min_rating,
+			max_rating=max_rating,
+			tags=tags
 		)
-		return jsonify(results)
+		
+		# Format results để match frontend expect
+		category_map = {
+			1: {"dishType": "dry", "pinColor": "red"},
+			2: {"dishType": "soup", "pinColor": "blue"},
+			3: {"dishType": "vegetarian", "pinColor": "green"},
+			4: {"dishType": "salty", "pinColor": "orange"},
+			5: {"dishType": "seafood", "pinColor": "purple"}
+		}
+		
+		formatted_results = []
+		for r in results:
+			category_id = r.get('category_id', 1)
+			category_info = category_map.get(category_id, {"dishType": "dry", "pinColor": "red"})
+			
+			formatted = {
+				"id": r.get('id'),
+				"name": r.get('name'),
+				"address": r.get('address'),
+				"position": {
+					"lat": r.get('lat'),
+					"lon": r.get('lon')
+				},
+				"dishType": category_info["dishType"],
+				"pinColor": category_info["pinColor"],
+				"rating": r.get('rating', 0),
+				"price_range": r.get('price_range'),
+				"phone_number": r.get('phone_number'),
+				"open_hours": r.get('open_hours'),
+				"main_image_url": r.get('main_image_url'),
+				"tags": r.get('tags', [])
+			}
+			
+			# Thêm distance nếu có
+			if 'distance' in r:
+				formatted['distance'] = r['distance']
+			
+			formatted_results.append(formatted)
+		
+		return jsonify({
+			"success": True,
+			"total": len(formatted_results),
+			"places": formatted_results
+		})
 	except Exception as e:
 		import traceback
 		print(f"Lỗi xảy ra khi tìm kiếm: {e}\n{traceback.format_exc()}")

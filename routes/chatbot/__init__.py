@@ -1,5 +1,10 @@
 from flask import Blueprint
 
-chatbot_bp = Blueprint("chatbot", __name__)
+chatbot_bp = Blueprint('chatbot', __name__)
 
-from . import chatbot_route
+# Import agent routes (unified chatbot)
+from . import agent
+
+
+
+
