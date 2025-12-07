@@ -11,8 +11,8 @@ def filter_map_markers():
     Request Body:
         - lat: float (optional) - Vĩ độ vị trí hiện tại
         - lon: float (optional) - Kinh độ vị trí hiện tại
-        - radius: float (optional) - Bán kính tìm kiếm (km), default: 10
-        - categories: list[int] (optional) - Danh sách category IDs
+        - radius: float (optional) - Bán kính tìm kiếm (km), default: 2
+        - categories: list[int] (optional) - Danh sách category IDs (None=no filter, []=empty result, [1,2,3]=strict filter)
         - min_price: int (optional) - Giá tối thiểu (VND)
         - max_price: int (optional) - Giá tối đa (VND)
         - min_rating: float (optional) - Rating tối thiểu
@@ -29,8 +29,8 @@ def filter_map_markers():
         # Lấy filters từ request
         user_lat = data.get('lat')
         user_lon = data.get('lon')
-        radius = data.get('radius', 10)  # km
-        filter_categories = data.get('categories', [])
+        radius = data.get('radius', 2)  # km - default 2km
+        filter_categories = data.get('categories')  # None=no filter, []=strict filter (empty), [1,2,3]=strict filter
         min_price = data.get('min_price')  # VND
         max_price = data.get('max_price')  # VND
         min_rating = data.get('min_rating', 0)
@@ -100,8 +100,11 @@ def filter_map_markers():
                 distance = None
             
             # Filter by category
-            if filter_categories and restaurant.get('category_id') not in filter_categories:
-                continue
+            # If filter_categories is explicitly set (empty list or values), apply strict filtering
+            # If filter_categories is None, don't filter by category (show all)
+            if filter_categories is not None:
+                if restaurant.get('category_id') not in filter_categories:
+                    continue
             
             # Filter by price range
             if min_price is not None or max_price is not None:
