@@ -4,7 +4,7 @@ from routes.food import food_bp
 
 from core.database import RESTAURANTS, MENUS_BY_RESTAURANT_ID
 
-@food_bp.route('/detail/<int:restaurant_id>', methods=['GET'])
+@food_bp.route('/restaurants/<int:restaurant_id>', methods=['GET'])
 def get_restaurant_detail(restaurant_id):
 	"""Lấy chi tiết nhà hàng và menu của nhà hàng đó."""
 	# 1. Tìm nhà hàng có ID tương ứng (dùng RESTAURANTS_DICT index)

@@ -46,6 +46,9 @@ def search_food():
 		if radius is not None:
 			try:
 				radius = float(radius)
+				# ⭐️ FIX UNIT: Frontend gửi Meters, Backend dùng Km -> Convert
+				if radius > 50: # Heuristic: Nếu > 50 thì assume là mét (vì 50km là quá xa cho Food search)
+					radius = radius / 1000.0
 			except (ValueError, TypeError):
 				radius = None
 		
@@ -85,12 +88,12 @@ def search_food():
 		if tags is not None and not isinstance(tags, list):
 			tags = None
 
-		# Debug logging
-		print("--- BẮT ĐẦU DEBUG REQUEST ---")
-		print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
-		print(f"2. Input: Query={query}, Province={province}")
-		print(f"3. Location: lat={user_lat}, lon={user_lon}, radius={radius}")
-		print(f"4. Filters: categories={categories}, price={min_price}-{max_price}, rating={min_rating}-{max_rating}")
+		# Debug logging (Removed)
+		# print("--- BẮT ĐẦU DEBUG REQUEST ---")
+		# print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
+		# print(f"2. Input: Query={query}, Province={province}")
+		# print(f"3. Location: lat={user_lat}, lon={user_lon}, radius={radius}")
+		# print(f"4. Filters: categories={categories}, price={min_price}-{max_price}, rating={min_rating}-{max_rating}")
 
 		results = search_algorithm(
 			query, 
