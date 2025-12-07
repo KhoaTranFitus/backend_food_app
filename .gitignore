@@ -6,6 +6,7 @@ File.env
 # Ẩn các file service account key (ví dụ: Firebase, Google Cloud)
 *-firebase-adminsdk-*.json
 serviceAccountKey.json
+firebase_auth.json
 
 # --- Python ---
 # Bỏ qua các thư mục cache do Python tự tạo
@@ -35,3 +36,14 @@ vietnam-*.osm.pbf
 
 # Bỏ qua file CSV chứa place_id
 *.csv
+
+# Bỏ qua folder placeID
+placeID/
+
+# Bỏ qua các file backup
+*_backup.json
+*_backup_*.json
+
+# --- IDE ---
+.vscode/
+
