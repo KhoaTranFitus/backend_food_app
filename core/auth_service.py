@@ -3,15 +3,15 @@ import random
 import os
 from dotenv import load_dotenv
 import firebase_admin
-from firebase_admin import credentials, db, auth
+from firebase_admin import credentials, auth, db
 import smtplib
 import json
 
 # Tải các biến môi trường
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENV_PATH = os.path.join(BASE_DIR, "File.env")
+ENV_PATH = os.path.join(BASE_DIR, ".env")
 USERS_PATH = os.path.join(BASE_DIR, "data", "users.json")
-KEY_PATH = os.path.join(BASE_DIR, "food-app-d0127-firebase-adminsdk-fbsvc-fb06070e09.json")
+KEY_PATH = os.path.join(BASE_DIR, "firebase_auth.json")
 print(f":mag: Loading env from: {ENV_PATH}")
 load_dotenv(ENV_PATH)
 
@@ -30,7 +30,7 @@ try:
     firebase_admin.initialize_app(cred, {
         'databaseURL': DB_URL
     })
-    print(":heavy_check_mark: KHỞI TẠO FIREBASE THÀNH CÔNG!")
+    print("✔️ KHỞI TẠO FIREBASE THÀNH CÔNG!")
 except FileNotFoundError:
     print(f":x: LỖI: Không tìm thấy file key Firebase tại: {KEY_PATH}")
 except Exception as e:
