@@ -6,6 +6,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, db
 import smtplib
 import json
+from flask import request # ⭐️ BỔ SUNG: Import request để sử dụng trong hàm mới ⭐️
 
 # Tải các biến môi trường
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -58,13 +59,30 @@ def send_verification_email(to_email, code):
 # Hàm load thông tin user
 def load_users():
     if not os.path.exists(USERS_PATH):
-        return []
+        return {}
+    with open(USERS_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+# ⭐️ HÀM MỚI: Lấy UID từ Header Authorization ⭐️
+def get_uid_from_auth_header():
+    """Lấy và xác thực Firebase ID Token từ Header Authorization, trả về UID."""
+    
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        raise ValueError("Missing Authorization header")
+
+    # Format phải là "Bearer <token>"
     try:
-        with open(USERS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        return []
-# Hàm ghi thông tin user
-def save_users(data):
-    with open(USERS_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        id_token = auth_header.split(' ')[1]
+    except IndexError:
+        raise ValueError("Invalid Authorization header format")
+
+    try:
+        # Xác thực token bằng Firebase Admin SDK
+        decoded_token = auth.verify_id_token(id_token)
+        uid = decoded_token['uid']
+        return uid
+    except Exception as e:
+        # Token hết hạn hoặc không hợp lệ
+        print(f":x: Token verification failed: {e}")
+        raise ValueError("Invalid or expired token")
