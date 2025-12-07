@@ -73,6 +73,18 @@ def search_algorithm(query, restaurants_db, menus_db, province=None, user_lat=No
 	
 	scores = {}  # restaurant_id: score
 	distances = {}  # restaurant_id: distance (km)
+	# 1. Lọc theo province trước (nếu có)
+	filtered_restaurants = restaurants_db
+	if normalized_province:
+		# Lọc theo tên thành phố trong địa chỉ
+		# VD: "Thành phố Hồ Chí Minh", "Hà Nội", "Đà Nẵng"
+		filtered_restaurants = []
+		for r in restaurants_db:
+			address = normalize_text(r.get('address', ''))
+			# Kiểm tra nếu province xuất hiện trong địa chỉ
+			if normalized_province in address:
+				filtered_restaurants.append(r)
+
 	
 	# 1. Áp dụng tất cả filters trước
 	filtered_restaurants = []
