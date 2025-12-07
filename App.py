@@ -11,6 +11,9 @@ from routes.food import food_bp
 from routes.user import user_bp 
 from routes.chatbot import chatbot_bp
 from routes.map import map_bp
+import routes.food.restaurants_route
+import routes.food.get_menu_by_restaurant
+
 
 app = Flask(__name__)
 CORS(app)

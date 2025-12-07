@@ -6,3 +6,5 @@ from . import search_route
 from . import list_all_foods_route
 from . import detail_route
 from . import direction_route
+from . import restaurants_route
+import routes.food.get_menu_by_restaurant

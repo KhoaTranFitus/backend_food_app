@@ -1,58 +1,1202 @@
 [
   {
-    "id": 101,
-    "restaurant_id": 1,
-    "dish_name": "Phở Tái",
+    "id": 1,
+    "restaurant_id": "ChIJEzXHbEcvdTERYJU-jigOumI",
+    "dish_name": "Nước Lẩu Cà Chua (Ngăn)",
+    "price": 80000,
+    "description": "Vị chua ngọt đậm đà từ cà chua tươi, món best-seller của Haidilao.",
+    "dish_tags": ["lẩu", "cà chua", "best seller"]
+  },
+  {
+    "id": 2,
+    "restaurant_id": "ChIJEzXHbEcvdTERYJU-jigOumI",
+    "dish_name": "Thịt Bò Haidilao",
+    "price": 160000,
+    "description": "Thịt bò được tẩm ướp gia vị đặc trưng, mềm tan khi nhúng lẩu.",
+    "dish_tags": ["bò", "nhúng lẩu"]
+  },
+  {
+    "id": 3,
+    "restaurant_id": "ChIJEzXHbEcvdTERYJU-jigOumI",
+    "dish_name": "Lẩu Thảo Dược",
+    "price": 120000,
+    "description": "Lẩu có vị thanh ngọt, làm từ cốt súp hầm xương heo, xương gà và các loại thảo mộc truyền thống.",
+    "dish_tags": ["lẩu", "thảo dược"]
+  },
+  {
+    "id": 4,
+    "restaurant_id": "ChIJEzXHbEcvdTERYJU-jigOumI",
+    "dish_name": "Tôm Phỉ Thúy",
+    "price": 125000,
+    "description": "Chả tôm tươi giã tay, dai giòn sần sật.",
+    "dish_tags": ["tôm", "nhúng lẩu"]
+  },
+  {
+    "id": 5,
+    "restaurant_id": "ChIJEzXHbEcvdTERYJU-jigOumI",
+    "dish_name": "Lẩu Dầu Cay",
+    "price": 110000,
+    "description": "Hương vị cay nồng tê lưỡi chuẩn Tứ Xuyên.",
+    "dish_tags": ["lẩu", "cay", "tứ xuyên"]
+  },
+  {
+    "id": 6,
+    "restaurant_id": "ChIJqSUY9d8udTER3gWPfy0eMms",
+    "dish_name": "Ốc Hương Rang Muối",
+    "price": 120000,
+    "description": "Ốc hương tươi ngon rang với lớp muối tôm mặn cay bên ngoài.",
+    "dish_tags": ["ốc", "rang muối", "hải sản"]
+  },
+  {
+    "id": 7,
+    "restaurant_id": "ChIJqSUY9d8udTER3gWPfy0eMms",
+    "dish_name": "Càng Ghẹ Rang Muối Ớt",
+    "price": 150000,
+    "description": "Càng ghẹ chắc thịt, sốt muối ớt cay nồng đậm đà.",
+    "dish_tags": ["ghẹ", "cay", "hải sản"]
+  },
+  {
+    "id": 8,
+    "restaurant_id": "ChIJqSUY9d8udTER3gWPfy0eMms",
+    "dish_name": "Sò Lông Nướng Mỡ Hành",
+    "price": 80000,
+    "description": "Sò lông béo ngậy nướng cùng mỡ hành thơm phức và đậu phộng.",
+    "dish_tags": ["sò", "nướng", "mỡ hành"]
+  },
+  {
+    "id": 9,
+    "restaurant_id": "ChIJqSUY9d8udTER3gWPfy0eMms",
+    "dish_name": "Hàu Nướng Phô Mai",
+    "price": 90000,
+    "description": "Hàu sữa tươi nướng ngập trong phô mai béo ngậy.",
+    "dish_tags": ["hàu", "phô mai", "nướng"]
+  },
+  {
+    "id": 10,
+    "restaurant_id": "ChIJqSUY9d8udTER3gWPfy0eMms",
+    "dish_name": "Ốc Tỏi Nướng Mắm Nhĩ",
+    "price": 100000,
+    "description": "Ốc tỏi size lớn nướng sốt nước mắm nhĩ thơm lừng.",
+    "dish_tags": ["ốc", "nướng", "mắm"]
+  },
+  {
+    "id": 11,
+    "restaurant_id": "ChIJxQUjKtsudTERO_KVgjmipAk",
+    "dish_name": "Heo Sữa Quay",
+    "price": 350000,
+    "description": "Da heo quay giòn rụm, thịt mềm ngọt, ăn kèm bánh bao chiên.",
+    "dish_tags": ["heo", "quay", "đặc sản"]
+  },
+  {
+    "id": 12,
+    "restaurant_id": "ChIJxQUjKtsudTERO_KVgjmipAk",
+    "dish_name": "Gà Nướng Lu",
+    "price": 280000,
+    "description": "Gà ta thả vườn nướng trong lu đất, giữ được độ ngọt của thịt.",
+    "dish_tags": ["gà", "nướng", "dân dã"]
+  },
+  {
+    "id": 13,
+    "restaurant_id": "ChIJxQUjKtsudTERO_KVgjmipAk",
+    "dish_name": "Xôi Chiên Phồng",
+    "price": 90000,
+    "description": "Quả bóng xôi chiên vàng rộm, dẻo thơm, món ăn kèm nổi tiếng.",
+    "dish_tags": ["xôi", "chiên", "ăn kèm"]
+  },
+  {
+    "id": 14,
+    "restaurant_id": "ChIJxQUjKtsudTERO_KVgjmipAk",
+    "dish_name": "Lẩu Cá Kèo Lá Giang",
+    "price": 220000,
+    "description": "Vị chua thanh của lá giang kết hợp cá kèo tươi sống.",
+    "dish_tags": ["lẩu", "cá", "miền tây"]
+  },
+  {
+    "id": 15,
+    "restaurant_id": "ChIJxQUjKtsudTERO_KVgjmipAk",
+    "dish_name": "Cá Lóc Nướng Trui",
+    "price": 180000,
+    "description": "Cá lóc đồng nướng rơm, cuốn bánh tráng rau sống.",
+    "dish_tags": ["cá", "nướng", "đặc sản"]
+  },
+  {
+    "id": 16,
+    "restaurant_id": "ChIJVcppq_MvdTER0YBMRQb1kMQ",
+    "dish_name": "Bò Nướng Đá The Gangs",
+    "price": 350000,
+    "description": "Thịt bò thượng hạng nướng trên đá nóng tại bàn.",
+    "dish_tags": ["bò", "nướng", "signature"]
+  },
+  {
+    "id": 17,
+    "restaurant_id": "ChIJVcppq_MvdTER0YBMRQb1kMQ",
+    "dish_name": "Sườn Nướng BBQ Khổng Lồ",
+    "price": 450000,
+    "description": "Tảng sườn heo nướng sốt BBQ đậm đà, phù hợp nhóm đông.",
+    "dish_tags": ["sườn", "bbq", "món nhậu"]
+  },
+  {
+    "id": 18,
+    "restaurant_id": "ChIJVcppq_MvdTER0YBMRQb1kMQ",
+    "dish_name": "Xúc Xích Đức Tổng Hợp",
+    "price": 220000,
+    "description": "Đĩa xúc xích Đức cao cấp nhiều loại, ăn kèm dưa cải muối.",
+    "dish_tags": ["xúc xích", "nhậu", "âu"]
+  },
+  {
+    "id": 19,
+    "restaurant_id": "ChIJVcppq_MvdTER0YBMRQb1kMQ",
+    "dish_name": "Salad Rong Nho Cá Ngừ",
+    "price": 150000,
+    "description": "Món khai vị thanh mát với rong nho biển và cá ngừ tươi.",
+    "dish_tags": ["salad", "khai vị", "rong nho"]
+  },
+  {
+    "id": 20,
+    "restaurant_id": "ChIJVcppq_MvdTER0YBMRQb1kMQ",
+    "dish_name": "Tháp Bia Tươi",
+    "price": 300000,
+    "description": "Tháp bia tươi mát lạnh sảng khoái cho cuộc vui.",
+    "dish_tags": ["bia", "đồ uống", "nhậu"]
+  },
+  {
+    "id": 21,
+    "restaurant_id": "ChIJC_ZdBdcvdTERl-Bkz2tkR4Q",
+    "dish_name": "Vịt Quay Bắc Kinh",
+    "price": 450000,
+    "description": "Vịt quay da giòn, thịt mềm, chuẩn vị Hong Kong.",
+    "dish_tags": ["vịt", "quay", "hong kong"]
+  },
+  {
+    "id": 22,
+    "restaurant_id": "ChIJC_ZdBdcvdTERl-Bkz2tkR4Q",
+    "dish_name": "Heo Quay Bì Giòn",
+    "price": 250000,
+    "description": "Thịt heo quay với lớp da nổ giòn tan, thịt mọng nước.",
+    "dish_tags": ["heo", "quay", "giòn"]
+  },
+  {
+    "id": 23,
+    "restaurant_id": "ChIJC_ZdBdcvdTERl-Bkz2tkR4Q",
+    "dish_name": "Xá Xíu Mật Ong",
+    "price": 200000,
+    "description": "Thịt nạc vai ướp sốt mật ong đỏ au, thơm lừng.",
+    "dish_tags": ["xá xíu", "nướng", "ngọt"]
+  },
+  {
+    "id": 24,
+    "restaurant_id": "ChIJC_ZdBdcvdTERl-Bkz2tkR4Q",
+    "dish_name": "Mì Vịt Tiềm",
+    "price": 110000,
+    "description": "Mì trứng dai ngon với đùi vịt tiềm thuốc bắc bổ dưỡng.",
+    "dish_tags": ["mì", "vịt", "tiềm"]
+  },
+  {
+    "id": 25,
+    "restaurant_id": "ChIJC_ZdBdcvdTERl-Bkz2tkR4Q",
+    "dish_name": "Cơm Chiên Dương Châu",
+    "price": 95000,
+    "description": "Cơm chiên tơi hạt với lạp xưởng, tôm và rau củ.",
+    "dish_tags": ["cơm", "chiên", "no"]
+  },
+  {
+    "id": 26,
+    "restaurant_id": "ChIJW2SKwawvdTERC3i1B0RZSHs",
+    "dish_name": "Ốc Len Xào Dừa",
+    "price": 85000,
+    "description": "Ốc len béo ngậy trong nước cốt dừa thơm phức.",
+    "dish_tags": ["ốc", "dừa", "béo"]
+  },
+  {
+    "id": 27,
+    "restaurant_id": "ChIJW2SKwawvdTERC3i1B0RZSHs",
+    "dish_name": "Răng Mực Xào Bơ Tỏi",
+    "price": 95000,
+    "description": "Răng mực giòn sần sật xào bơ tỏi thơm lừng, kèm bánh mì.",
+    "dish_tags": ["mực", "bơ tỏi", "ăn vặt"]
+  },
+  {
+    "id": 28,
+    "restaurant_id": "ChIJW2SKwawvdTERC3i1B0RZSHs",
+    "dish_name": "Ốc Mỡ Xào Me",
+    "price": 90000,
+    "description": "Sốt me chua ngọt áo đều lên từng con ốc mỡ.",
+    "dish_tags": ["ốc", "me", "chua ngọt"]
+  },
+  {
+    "id": 29,
+    "restaurant_id": "ChIJW2SKwawvdTERC3i1B0RZSHs",
+    "dish_name": "Nghêu Hấp Thái",
+    "price": 75000,
+    "description": "Nghêu tươi hấp sả ớt kiểu Thái cay nồng.",
+    "dish_tags": ["nghêu", "hấp", "cay"]
+  },
+  {
+    "id": 30,
+    "restaurant_id": "ChIJW2SKwawvdTERC3i1B0RZSHs",
+    "dish_name": "Sò Điệp Nướng Trứng Cút",
+    "price": 80000,
+    "description": "Sò điệp nướng cùng trứng cút và mỡ hành độc đáo.",
+    "dish_tags": ["sò", "nướng", "trứng"]
+  },
+  {
+    "id": 31,
+    "restaurant_id": "ChIJO3CD2AQvdTEROGb4ZNBk9_4",
+    "dish_name": "Gà Giòn Vui Vẻ (2 miếng)",
     "price": 70000,
-    "description": "Thịt bò tái mềm, nước lèo đậm đà.",
-    "dish_tags": ["bò", "nước"]
+    "description": "Gà rán da giòn rụm, thịt mềm, món signature của Jollibee.",
+    "dish_tags": ["gà rán", "nhanh", "trẻ em"]
+  },
+  {
+    "id": 32,
+    "restaurant_id": "ChIJO3CD2AQvdTEROGb4ZNBk9_4",
+    "dish_name": "Mì Ý Sốt Bò Bằm",
+    "price": 40000,
+    "description": "Mì Ý sốt cà chua bò bằm phô mai đặc trưng.",
+    "dish_tags": ["mì ý", "sốt", "nhanh"]
+  },
+  {
+    "id": 33,
+    "restaurant_id": "ChIJO3CD2AQvdTEROGb4ZNBk9_4",
+    "dish_name": "Cơm Gà Sốt Cay",
+    "price": 45000,
+    "description": "Cơm trắng ăn kèm miếng gà không xương tẩm sốt cay.",
+    "dish_tags": ["cơm", "gà", "cay"]
+  },
+  {
+    "id": 34,
+    "restaurant_id": "ChIJO3CD2AQvdTEROGb4ZNBk9_4",
+    "dish_name": "Burger Tôm",
+    "price": 45000,
+    "description": "Bánh mì kẹp nhân tôm chiên xù và sốt mayonnaise.",
+    "dish_tags": ["burger", "tôm", "bánh mì"]
+  },
+  {
+    "id": 35,
+    "restaurant_id": "ChIJO3CD2AQvdTEROGb4ZNBk9_4",
+    "dish_name": "Khoai Tây Lắc BBQ",
+    "price": 30000,
+    "description": "Khoai tây chiên giòn lắc bột gia vị BBQ.",
+    "dish_tags": ["khoai tây", "ăn vặt", "chiên"]
+  },
+  {
+    "id": 36,
+    "restaurant_id": "ChIJBUZZeh4vdTERjcZTglYc-B4",
+    "dish_name": "Buffet Hải Sản Tối",
+    "price": 1200000,
+    "description": "Tiệc buffet quốc tế với tôm hùm, cua, hàu và sashimi không giới hạn.",
+    "dish_tags": ["buffet", "hải sản", "cao cấp"]
+  },
+  {
+    "id": 37,
+    "restaurant_id": "ChIJBUZZeh4vdTERjcZTglYc-B4",
+    "dish_name": "Bò Beefsteak Nhập Khẩu",
+    "price": 550000,
+    "description": "Thăn bò Úc nướng chín tới, kèm sốt tiêu đen.",
+    "dish_tags": ["bò", "u", "sang trọng"]
+  },
+  {
+    "id": 38,
+    "restaurant_id": "ChIJBUZZeh4vdTERjcZTglYc-B4",
+    "dish_name": "Dimsum Thượng Hạng",
+    "price": 150000,
+    "description": "Xửng dimsum tổng hợp chế biến thủ công tinh xảo.",
+    "dish_tags": ["dimsum", "trung hoa", "hấp"]
+  },
+  {
+    "id": 39,
+    "restaurant_id": "ChIJBUZZeh4vdTERjcZTglYc-B4",
+    "dish_name": "Cá Hồi Áp Chảo",
+    "price": 380000,
+    "description": "Phi lê cá hồi áp chảo dùng kèm rau củ và sốt chanh dây.",
+    "dish_tags": ["cá", "âu", "healthy"]
+  },
+  {
+    "id": 40,
+    "restaurant_id": "ChIJBUZZeh4vdTERjcZTglYc-B4",
+    "dish_name": "Tiệc Trà Chiều (Afternoon Tea)",
+    "price": 450000,
+    "description": "Set bánh ngọt và trà Anh Quốc thư giãn buổi chiều.",
+    "dish_tags": ["trà", "bánh", "thư giãn"]
+  },
+  {
+    "id": 41,
+    "restaurant_id": "ChIJ2eSxOIQvdTERaL5Ume1Fz1w",
+    "dish_name": "Cơm Sườn Cốt Lết",
+    "price": 75000,
+    "description": "Sườn cốt lết nướng than hồng thơm phức, mềm ngọt.",
+    "dish_tags": ["cơm tấm", "sườn", "nướng"]
+  },
+  {
+    "id": 42,
+    "restaurant_id": "ChIJ2eSxOIQvdTERaL5Ume1Fz1w",
+    "dish_name": "Cơm Sườn Bì Chả",
+    "price": 95000,
+    "description": "Dĩa cơm tấm đầy đủ 'Sà Bì Chưởng' trứ danh Sài Gòn.",
+    "dish_tags": ["cơm tấm", "đầy đủ", "truyền thống"]
+  },
+  {
+    "id": 43,
+    "restaurant_id": "ChIJ2eSxOIQvdTERaL5Ume1Fz1w",
+    "dish_name": "Canh Khổ Qua Nhồi Thịt",
+    "price": 30000,
+    "description": "Canh khổ qua thanh mát, giải nhiệt, ít đắng.",
+    "dish_tags": ["canh", "khổ qua", "thanh mát"]
+  },
+  {
+    "id": 44,
+    "restaurant_id": "ChIJ2eSxOIQvdTERaL5Ume1Fz1w",
+    "dish_name": "Cơm Ba Rọi Nướng",
+    "price": 80000,
+    "description": "Ba rọi heo nướng cháy cạnh, béo ngậy đậm đà.",
+    "dish_tags": ["cơm tấm", "heo", "béo"]
+  },
+  {
+    "id": 45,
+    "restaurant_id": "ChIJ2eSxOIQvdTERaL5Ume1Fz1w",
+    "dish_name": "Chả Giò Đặc Biệt",
+    "price": 40000,
+    "description": "Chả giò chiên giòn rụm, nhân thịt khoai môn.",
+    "dish_tags": ["chả giò", "chiên", "ăn kèm"]
+  },
+  {
+    "id": 46,
+    "restaurant_id": "ChIJ3_io66MvdTERjrt36-K0phg",
+    "dish_name": "Cà Phê Trứng",
+    "price": 65000,
+    "description": "Lớp kem trứng béo mịn phủ trên cà phê đậm đà.",
+    "dish_tags": ["cà phê", "trứng", "đồ uống"]
+  },
+  {
+    "id": 47,
+    "restaurant_id": "ChIJ3_io66MvdTERjrt36-K0phg",
+    "dish_name": "Mì Ý Sốt Kem Nấm",
+    "price": 110000,
+    "description": "Mì Spaghetti sốt kem carbonara béo ngậy với nấm và thịt xông khói.",
+    "dish_tags": ["mì ý", "kem", "âu"]
+  },
+  {
+    "id": 48,
+    "restaurant_id": "ChIJ3_io66MvdTERjrt36-K0phg",
+    "dish_name": "Trà Đào Cam Sả",
+    "price": 55000,
+    "description": "Trà thanh mát giải nhiệt với miếng đào giòn ngọt.",
+    "dish_tags": ["trà", "trái cây", "giải khát"]
+  },
+  {
+    "id": 49,
+    "restaurant_id": "ChIJ3_io66MvdTERjrt36-K0phg",
+    "dish_name": "Bò Kho Bánh Mì",
+    "price": 85000,
+    "description": "Bò kho mềm thơm gia vị, chấm bánh mì nóng giòn.",
+    "dish_tags": ["bò", "bánh mì", "sáng"]
+  },
+  {
+    "id": 50,
+    "restaurant_id": "ChIJ3_io66MvdTERjrt36-K0phg",
+    "dish_name": "Croissant Trứng Muối",
+    "price": 45000,
+    "description": "Bánh sừng trâu ngàn lớp với sốt trứng muối tan chảy.",
+    "dish_tags": ["bánh", "ngọt", "ăn nhẹ"]
+  },
+  {
+    "id": 51,
+    "restaurant_id": "ChIJg-GCAP0udTERBzmwi8B6NV4",
+    "dish_name": "Phở Tái",
+    "price": 85000,
+    "description": "Thịt bò tái mềm, nước lèo đậm đà đặc trưng Phở Lệ.",
+    "dish_tags": ["phở", "bò", "nước"]
+  },
+  {
+    "id": 52,
+    "restaurant_id": "ChIJg-GCAP0udTERBzmwi8B6NV4",
+    "dish_name": "Phở Nạm",
+    "price": 85000,
+    "description": "Nạm bò được hầm kỹ, béo ngậy, thơm mùi bò.",
+    "dish_tags": ["phở", "bò", "nạm"]
+  },
+  {
+    "id": 53,
+    "restaurant_id": "ChIJg-GCAP0udTERBzmwi8B6NV4",
+    "dish_name": "Phở Đặc Biệt",
+    "price": 110000,
+    "description": "Tô lớn đầy đủ tái, nạm, gầu, gân, bò viên.",
+    "dish_tags": ["phở", "thập cẩm", "đặc biệt"]
+  },
+  {
+    "id": 54,
+    "restaurant_id": "ChIJg-GCAP0udTERBzmwi8B6NV4",
+    "dish_name": "Phở Bò Viên",
+    "price": 85000,
+    "description": "Bò viên dai ngon, sần sật, làm thủ công.",
+    "dish_tags": ["phở", "bò viên", "nước"]
+  },
+  {
+    "id": 55,
+    "restaurant_id": "ChIJg-GCAP0udTERBzmwi8B6NV4",
+    "dish_name": "Chén Trứng Tiết",
+    "price": 25000,
+    "description": "Chén súp nước béo với trứng trần và tiết bò.",
+    "dish_tags": ["trứng", "thêm", "ăn kèm"]
+  },
+  {
+    "id": 56,
+    "restaurant_id": "ChIJT9Pk5PsudTER3sQCMS5UC_0",
+    "dish_name": "Há Cảo Tôm",
+    "price": 68000,
+    "description": "Vỏ mỏng dai, nhân tôm tươi nguyên con ngọt thịt.",
+    "dish_tags": ["hấp", "tôm", "dimsum"]
+  },
+  {
+    "id": 57,
+    "restaurant_id": "ChIJT9Pk5PsudTER3sQCMS5UC_0",
+    "dish_name": "Bánh Bao Kim Sa",
+    "price": 55000,
+    "description": "Nhân trứng muối tan chảy vàng óng, vỏ bánh mềm mịn.",
+    "dish_tags": ["bánh bao", "ngọt", "trứng muối"]
+  },
+  {
+    "id": 58,
+    "restaurant_id": "ChIJT9Pk5PsudTER3sQCMS5UC_0",
+    "dish_name": "Xíu Mại Nấm Đông Cô",
+    "price": 62000,
+    "description": "Xíu mại thịt heo nấm hương thơm lừng, sốt đậm đà.",
+    "dish_tags": ["hấp", "thịt", "dimsum"]
+  },
+  {
+    "id": 59,
+    "restaurant_id": "ChIJT9Pk5PsudTER3sQCMS5UC_0",
+    "dish_name": "Chân Gà Hấp Tàu Xì",
+    "price": 60000,
+    "description": "Chân gà hầm mềm rục, thấm vị tương tàu xì đặc trưng.",
+    "dish_tags": ["chân gà", "hấp", "tàu xì"]
+  },
+  {
+    "id": 60,
+    "restaurant_id": "ChIJT9Pk5PsudTER3sQCMS5UC_0",
+    "dish_name": "Bánh Cuốn Tôm",
+    "price": 75000,
+    "description": "Bánh cuốn tráng mỏng cuộn tôm tươi, rưới nước tương ngọt.",
+    "dish_tags": ["bánh cuốn", "tôm", "hấp"]
+  },
+  {
+    "id": 61,
+    "restaurant_id": "ChIJoXpPZCAvdTEROiFyAQ61Irs",
+    "dish_name": "Cơm Trộn (Bibimbap)",
+    "price": 65000,
+    "description": "Cơm trộn hàn quốc với rau củ, thịt bò và trứng ốp la.",
+    "dish_tags": ["cơm", "hàn quốc", "trộn"]
+  },
+  {
+    "id": 62,
+    "restaurant_id": "ChIJoXpPZCAvdTEROiFyAQ61Irs",
+    "dish_name": "Tokbokki Phô Mai",
+    "price": 55000,
+    "description": "Bánh gạo cay dẻo dai nấu cùng chả cá và phô mai kéo sợi.",
+    "dish_tags": ["bánh gạo", "cay", "phô mai"]
+  },
+  {
+    "id": 63,
+    "restaurant_id": "ChIJoXpPZCAvdTEROiFyAQ61Irs",
+    "dish_name": "Gà Rán Sốt Cay",
+    "price": 70000,
+    "description": "Gà chiên giòn tẩm sốt cay ngọt Hàn Quốc.",
+    "dish_tags": ["gà", "chiên", "cay"]
+  },
+  {
+    "id": 64,
+    "restaurant_id": "ChIJoXpPZCAvdTEROiFyAQ61Irs",
+    "dish_name": "Mì Tương Đen",
+    "price": 60000,
+    "description": "Mì Jajangmyeon sốt tương đen thịt bằm chuẩn vị.",
+    "dish_tags": ["mì", "tương đen", "hàn quốc"]
+  },
+  {
+    "id": 65,
+    "restaurant_id": "ChIJoXpPZCAvdTEROiFyAQ61Irs",
+    "dish_name": "Súp Kim Chi",
+    "price": 65000,
+    "description": "Canh kim chi chua cay nấu cùng đậu hũ và thịt heo.",
+    "dish_tags": ["canh", "kim chi", "cay"]
+  },
+  {
+    "id": 66,
+    "restaurant_id": "ChIJK8fZdN4udTERQpnxZwsO6VA",
+    "dish_name": "Lẩu Kim Chi",
+    "price": 180000,
+    "description": "Nồi lẩu kim chi nóng hổi, nhiều topping thịt và xúc xích.",
+    "dish_tags": ["lẩu", "kim chi", "nhóm"]
+  },
+  {
+    "id": 67,
+    "restaurant_id": "ChIJK8fZdN4udTERQpnxZwsO6VA",
+    "dish_name": "Kimbap Truyền Thống",
+    "price": 45000,
+    "description": "Cơm cuộn rong biển nhân thanh cua, trứng và rau củ.",
+    "dish_tags": ["cơm cuộn", "kimbap", "nhanh"]
+  },
+  {
+    "id": 68,
+    "restaurant_id": "ChIJK8fZdN4udTERQpnxZwsO6VA",
+    "dish_name": "Miến Trộn (Japchae)",
+    "price": 60000,
+    "description": "Miến khoai lang xào cùng rau củ và dầu mè thơm phức.",
+    "dish_tags": ["miến", "trộn", "hàn quốc"]
+  },
+  {
+    "id": 69,
+    "restaurant_id": "ChIJK8fZdN4udTERQpnxZwsO6VA",
+    "dish_name": "Gà Rán Sốt Ngọt",
+    "price": 70000,
+    "description": "Gà chiên không cay, sốt mật ong ngọt ngào.",
+    "dish_tags": ["gà", "ngọt", "trẻ em"]
+  },
+  {
+    "id": 70,
+    "restaurant_id": "ChIJK8fZdN4udTERQpnxZwsO6VA",
+    "dish_name": "Mandu Chiên",
+    "price": 40000,
+    "description": "Bánh xếp Hàn Quốc chiên giòn, nhân thịt và rau.",
+    "dish_tags": ["bánh xếp", "chiên", "ăn vặt"]
+  },
+  {
+    "id": 71,
+    "restaurant_id": "ChIJPWf4Z_AvdTERoJUKIdxB1Bw",
+    "dish_name": "Gà Sốt Mật Ong",
+    "price": 140000,
+    "description": "Cánh gà chiên giòn tan phủ sốt mật ong bóng bẩy.",
+    "dish_tags": ["gà", "chiên", "ngọt"]
+  },
+  {
+    "id": 72,
+    "restaurant_id": "ChIJPWf4Z_AvdTERoJUKIdxB1Bw",
+    "dish_name": "Chân Gà Cay",
+    "price": 120000,
+    "description": "Chân gà rút xương sốt cay nồng, món nhậu tuyệt vời.",
+    "dish_tags": ["chân gà", "cay", "nhậu"]
+  },
+  {
+    "id": 73,
+    "restaurant_id": "ChIJPWf4Z_AvdTERoJUKIdxB1Bw",
+    "dish_name": "Cơm Nắm Rong Biển",
+    "price": 60000,
+    "description": "Cơm nắm trộn gia vị và rong biển vụn, dễ ăn.",
+    "dish_tags": ["cơm", "rong biển", "ăn kèm"]
+  },
+  {
+    "id": 74,
+    "restaurant_id": "ChIJPWf4Z_AvdTERoJUKIdxB1Bw",
+    "dish_name": "Mì Cay Hải Sản",
+    "price": 75000,
+    "description": "Mì nước cay cấp độ với tôm, mực và nghêu.",
+    "dish_tags": ["mì", "cay", "hải sản"]
+  },
+  {
+    "id": 75,
+    "restaurant_id": "ChIJPWf4Z_AvdTERoJUKIdxB1Bw",
+    "dish_name": "Lẩu Tokbokki",
+    "price": 160000,
+    "description": "Lẩu bánh gạo đầy ắp chả cá, trứng và mì.",
+    "dish_tags": ["lẩu", "bánh gạo", "nhóm"]
+  },
+  {
+    "id": 76,
+    "restaurant_id": "ChIJ2S-0T_kudTERZJdH0xPvJJU",
+    "dish_name": "Cơm Thố Bò Mỹ",
+    "price": 85000,
+    "description": "Thịt bò Mỹ thái lát xào hành tây trên cơm nóng hổi.",
+    "dish_tags": ["cơm", "bò", "nhật bản"]
+  },
+  {
+    "id": 77,
+    "restaurant_id": "ChIJ2S-0T_kudTERZJdH0xPvJJU",
+    "dish_name": "Cơm Thố Gà Nướng Teriyaki",
+    "price": 75000,
+    "description": "Đùi gà nướng da giòn sốt Teriyaki mặn ngọt.",
+    "dish_tags": ["cơm", "gà", "nướng"]
+  },
+  {
+    "id": 78,
+    "restaurant_id": "ChIJ2S-0T_kudTERZJdH0xPvJJU",
+    "dish_name": "Cơm Thố Heo Chiên Xù (Tonkatsu)",
+    "price": 80000,
+    "description": "Thịt heo tẩm bột chiên xù giòn rụm, cơm dẻo.",
+    "dish_tags": ["cơm", "heo", "chiên"]
+  },
+  {
+    "id": 79,
+    "restaurant_id": "ChIJ2S-0T_kudTERZJdH0xPvJJU",
+    "dish_name": "Mì Udon Xào Hải Sản",
+    "price": 90000,
+    "description": "Sợi mì Udon to dai xào cùng tôm mực và rau củ.",
+    "dish_tags": ["mì", "hải sản", "xào"]
+  },
+  {
+    "id": 80,
+    "restaurant_id": "ChIJ2S-0T_kudTERZJdH0xPvJJU",
+    "dish_name": "Tempura Tôm",
+    "price": 95000,
+    "description": "Tôm chiên bột kiểu Nhật vàng ươm, giòn tan.",
+    "dish_tags": ["tôm", "chiên", "ăn kèm"]
+  },
+  {
+    "id": 81,
+    "restaurant_id": "ChIJR_a6CqIvdTERDJM-ayAreuM",
+    "dish_name": "Pizza 4 Cheese",
+    "price": 280000,
+    "description": "Sự kết hợp hoàn hảo của 4 loại phô mai trứ danh kèm mật ong.",
+    "dish_tags": ["pizza", "phô mai", "signature"]
+  },
+  {
+    "id": 82,
+    "restaurant_id": "ChIJR_a6CqIvdTERDJM-ayAreuM",
+    "dish_name": "Mì Ý Cua (Crab Tomato Cream)",
+    "price": 260000,
+    "description": "Mì ý sốt kem cà chua thịt cua, món ăn nổi tiếng nhất 4P's.",
+    "dish_tags": ["mì ý", "cua", "best seller"]
+  },
+  {
+    "id": 83,
+    "restaurant_id": "ChIJR_a6CqIvdTERDJM-ayAreuM",
+    "dish_name": "Salad Phô Mai Burrata & Trái Cây",
+    "price": 320000,
+    "description": "Phô mai tươi Burrata béo ngậy ăn kèm trái cây nhiệt đới và thịt nguội.",
+    "dish_tags": ["salad", "phô mai", "healthy"]
+  },
+  {
+    "id": 84,
+    "restaurant_id": "ChIJR_a6CqIvdTERDJM-ayAreuM",
+    "dish_name": "Pizza Cá Hồi Miso",
+    "price": 290000,
+    "description": "Pizza sốt kem Miso với cá hồi hun khói độc đáo.",
+    "dish_tags": ["pizza", "cá hồi", "fusion"]
+  },
+  {
+    "id": 85,
+    "restaurant_id": "ChIJR_a6CqIvdTERDJM-ayAreuM",
+    "dish_name": "Pizza Gà Teriyaki",
+    "price": 240000,
+    "description": "Pizza gà nướng sốt Teriyaki rong biển, vị Nhật Bản.",
+    "dish_tags": ["pizza", "gà", "nhật bản"]
+  },
+  {
+    "id": 86,
+    "restaurant_id": "ChIJcc_l2VovdTERZ1HWMQDq-PY",
+    "dish_name": "Há Cảo Tôm Thịt",
+    "price": 35000,
+    "description": "Viên há cảo to tròn, nhân thịt tôm đầy đặn.",
+    "dish_tags": ["há cảo", "hấp", "bình dân"]
+  },
+  {
+    "id": 87,
+    "restaurant_id": "ChIJcc_l2VovdTERZ1HWMQDq-PY",
+    "dish_name": "Xíu Mại Nước",
+    "price": 35000,
+    "description": "Xíu mại mềm thơm ăn kèm nước chấm chua ngọt.",
+    "dish_tags": ["xíu mại", "hấp", "ăn sáng"]
+  },
+  {
+    "id": 88,
+    "restaurant_id": "ChIJcc_l2VovdTERZ1HWMQDq-PY",
+    "dish_name": "Bánh Xếp Hẹ",
+    "price": 40000,
+    "description": "Bánh xếp nhân hẹ và thịt chiên giòn rụm.",
+    "dish_tags": ["bánh xếp", "chiên", "hẹ"]
+  },
+  {
+    "id": 89,
+    "restaurant_id": "ChIJcc_l2VovdTERZ1HWMQDq-PY",
+    "dish_name": "Há Cảo Chiên",
+    "price": 35000,
+    "description": "Há cảo chiên giòn chấm tương ớt.",
+    "dish_tags": ["há cảo", "chiên", "ăn vặt"]
+  },
+  {
+    "id": 90,
+    "restaurant_id": "ChIJcc_l2VovdTERZ1HWMQDq-PY",
+    "dish_name": "Sữa Đậu Nành",
+    "price": 10000,
+    "description": "Sữa đậu nành nấu nhà làm, thơm béo.",
+    "dish_tags": ["đồ uống", "sữa", "giải khát"]
+  },
+  {
+    "id": 91,
+    "restaurant_id": "ChIJjZ1IDpEudTERNOJZY2MsE2A",
+    "dish_name": "Cơm Chiên Hải Sản",
+    "price": 95000,
+    "description": "Cơm chiên tơi ngon với tôm mực tươi.",
+    "dish_tags": ["cơm", "hải sản", "trưa"]
+  },
+  {
+    "id": 92,
+    "restaurant_id": "ChIJjZ1IDpEudTERNOJZY2MsE2A",
+    "dish_name": "Bò Bít Tết Khoai Tây",
+    "price": 120000,
+    "description": "Bò sốt tiêu đen ăn kèm khoai tây chiên và bánh mì.",
+    "dish_tags": ["bò", "bít tết", "âu"]
+  },
+  {
+    "id": 93,
+    "restaurant_id": "ChIJjZ1IDpEudTERNOJZY2MsE2A",
+    "dish_name": "Lẩu Thái Chua Cay",
+    "price": 250000,
+    "description": "Lẩu thái vị chua cay đậm đà, nhiều rau và hải sản.",
+    "dish_tags": ["lẩu", "thái", "nhóm"]
+  },
+  {
+    "id": 94,
+    "restaurant_id": "ChIJjZ1IDpEudTERNOJZY2MsE2A",
+    "dish_name": "Cà Phê Đá Miền Thảo Mộc",
+    "price": 45000,
+    "description": "Cà phê pha phin truyền thống đậm đà hương vị.",
+    "dish_tags": ["cà phê", "đồ uống", "sáng"]
+  },
+  {
+    "id": 95,
+    "restaurant_id": "ChIJjZ1IDpEudTERNOJZY2MsE2A",
+    "dish_name": "Sinh Tố Bơ",
+    "price": 60000,
+    "description": "Sinh tố bơ sáp dẻo mịn, béo ngậy.",
+    "dish_tags": ["sinh tố", "trái cây", "giải khát"]
+  },
+  {
+    "id": 96,
+    "restaurant_id": "ChIJQfuc7mwvdTER_FpLD444vnQ",
+    "dish_name": "Heo Sữa Quay (Phần)",
+    "price": 300000,
+    "description": "Phần heo sữa quay da giòn tan, thịt ngọt.",
+    "dish_tags": ["heo", "quay", "đặc sản"]
+  },
+  {
+    "id": 97,
+    "restaurant_id": "ChIJQfuc7mwvdTER_FpLD444vnQ",
+    "dish_name": "Gà Luộc Cửu Long",
+    "price": 280000,
+    "description": "Gà ta luộc da vàng óng, thịt chắc, chấm muối tiêu chanh.",
+    "dish_tags": ["gà", "luộc", "truyền thống"]
+  },
+  {
+    "id": 98,
+    "restaurant_id": "ChIJQfuc7mwvdTER_FpLD444vnQ",
+    "dish_name": "Vịt Quay Tứ Xuyên",
+    "price": 460000,
+    "description": "Vịt quay với sốt Tứ Xuyên cay nồng kích thích vị giác.",
+    "dish_tags": ["vịt", "quay", "cay"]
+  },
+  {
+    "id": 99,
+    "restaurant_id": "ChIJQfuc7mwvdTER_FpLD444vnQ",
+    "dish_name": "Canh Tiềm Gà Ác",
+    "price": 85000,
+    "description": "Gà ác tiềm thuốc bắc bổ dưỡng, nước dùng ngọt thanh.",
+    "dish_tags": ["canh", "tiềm", "bổ dưỡng"]
+  },
+  {
+    "id": 100,
+    "restaurant_id": "ChIJQfuc7mwvdTER_FpLD444vnQ",
+    "dish_name": "Hủ Tiếu Xào Bò",
+    "price": 110000,
+    "description": "Hủ tiếu xào áp chảo thơm mùi khói (wok hei) với thịt bò mềm.",
+    "dish_tags": ["hủ tiếu", "xào", "bò"]
+  },
+  {
+    "id": 101,
+    "restaurant_id": "ChIJH9cdkPgvdTERVd66MmrnbBY",
+    "dish_name": "Mì Cay Bò Mỹ (Cấp độ 0-7)",
+    "price": 55000,
+    "description": "Mì Hàn Quốc dai ngon nấu cùng bò Mỹ, xúc xích và nước dùng cay nồng.",
+    "dish_tags": ["mì cay", "bò", "hàn quốc"]
   },
   {
     "id": 102,
-    "restaurant_id": 1,
-    "dish_name": "Phở Nạm",
-    "price": 75000,
-    "description": "Nạm bò được hầm kỹ, béo ngậy.",
-    "dish_tags": ["bò", "nạm"]
+    "restaurant_id": "ChIJH9cdkPgvdTERVd66MmrnbBY",
+    "dish_name": "Mì Cay Hải Sản",
+    "price": 55000,
+    "description": "Sự kết hợp giữa tôm, mực tươi và nước súp chua cay đậm đà.",
+    "dish_tags": ["mì cay", "hải sản", "cay"]
   },
   {
     "id": 103,
-    "restaurant_id": 1,
-    "dish_name": "Chén hột gà",
-    "price": 10000,
-    "description": "Trứng gà chần ăn kèm.",
-    "dish_tags": ["trứng", "ăn kèm"]
-  },
-  {
-    "id": 201,
-    "restaurant_id": 2,
-    "dish_name": "Nấm bào ngư xào",
-    "price": 120000,
-    "description": "Nấm bào ngư tươi xào cùng rau củ.",
-    "dish_tags": ["nấm", "món chính", "xào"]
-  },
-  {
-    "id": 202,
-    "restaurant_id": 2,
-    "dish_name": "Cơm gạo lứt",
+    "restaurant_id": "ChIJH9cdkPgvdTERVd66MmrnbBY",
+    "dish_name": "Takoyaki (Bánh Bạch Tuộc)",
     "price": 40000,
-    "description": "Cơm gạo lứt nấu dẻo, tốt cho sức khỏe.",
-    "dish_tags": ["cơm", "gạo lứt"]
+    "description": "Bánh bạch tuộc nướng vàng, rưới sốt mayonaise và cá bào.",
+    "dish_tags": ["ăn vặt", "bánh", "nhật bản"]
   },
   {
-    "id": 301,
-    "restaurant_id": 3,
-    "dish_name": "Cơm sườn bì chả",
+    "id": 104,
+    "restaurant_id": "ChIJH9cdkPgvdTERVd66MmrnbBY",
+    "dish_name": "Kimbap Chiên Xù",
+    "price": 45000,
+    "description": "Cơm cuộn rong biển tẩm bột chiên giòn rụm, nhân thanh cua.",
+    "dish_tags": ["kimbap", "chiên", "cơm"]
+  },
+  {
+    "id": 105,
+    "restaurant_id": "ChIJH9cdkPgvdTERVd66MmrnbBY",
+    "dish_name": "Trà Sữa Thái Xanh",
+    "price": 25000,
+    "description": "Trà sữa thái xanh đậm vị trà, ngọt béo vừa phải.",
+    "dish_tags": ["trà sữa", "đồ uống", "giải khát"]
+  },
+  {
+    "id": 106,
+    "restaurant_id": "ChIJtVlD9wgvdTERP3sGNcdAeHs",
+    "dish_name": "Bánh Mì Đặc Biệt Bà Huynh",
+    "price": 65000,
+    "description": "Ổ bánh mì ngập tràn thịt chả, pate béo ngậy và bơ thơm lừng.",
+    "dish_tags": ["bánh mì", "đặc biệt", "pate"]
+  },
+  {
+    "id": 107,
+    "restaurant_id": "ChIJtVlD9wgvdTERP3sGNcdAeHs",
+    "dish_name": "Bánh Mì Chả Lụa Jambon",
+    "price": 55000,
+    "description": "Sự kết hợp truyền thống giữa chả lụa dai ngon và jambon ngoại nhập.",
+    "dish_tags": ["bánh mì", "chả", "jambon"]
+  },
+  {
+    "id": 108,
+    "restaurant_id": "ChIJtVlD9wgvdTERP3sGNcdAeHs",
+    "dish_name": "Bánh Mì Xíu Mại",
+    "price": 50000,
+    "description": "Xíu mại mềm thấm sốt cà chua, ăn kèm đồ chua giòn.",
+    "dish_tags": ["bánh mì", "xíu mại", "sốt"]
+  },
+  {
+    "id": 109,
+    "restaurant_id": "ChIJtVlD9wgvdTERP3sGNcdAeHs",
+    "dish_name": "Phần Pate Thêm (Hộp nhỏ)",
+    "price": 40000,
+    "description": "Pate gan heo làm thủ công, béo mịn, món best-seller của quán.",
+    "dish_tags": ["pate", "ăn kèm", "đặc sản"]
+  },
+  {
+    "id": 110,
+    "restaurant_id": "ChIJtVlD9wgvdTERP3sGNcdAeHs",
+    "dish_name": "Bánh Mì Không",
+    "price": 5000,
+    "description": "Bánh mì nướng tại lò nóng hổi, vỏ giòn ruột đặc.",
+    "dish_tags": ["bánh mì", "vỏ giòn"]
+  },
+  {
+    "id": 111,
+    "restaurant_id": "ChIJ3Vks1yQvdTERj0-9LppzbrA",
+    "dish_name": "Cơm Trộn Cha Cha",
     "price": 60000,
-    "description": "Đĩa cơm đầy đủ sườn nướng, bì, chả trứng.",
-    "dish_tags": ["heo", "sườn", "cơm"]
+    "description": "Cơm trộn sốt đặc biệt trên chảo nóng với nhiều loại rau củ.",
+    "dish_tags": ["cơm", "trộn", "hàn quốc"]
   },
   {
-    "id": 302,
-    "restaurant_id": 3,
-    "dish_name": "Sườn cốt lết (thêm)",
-    "price": 30000,
-    "description": "Thêm một miếng sườn nướng.",
-    "dish_tags": ["heo", "sườn"]
+    "id": 112,
+    "restaurant_id": "ChIJ3Vks1yQvdTERj0-9LppzbrA",
+    "dish_name": "Gà Rán Sốt Gia Vị (Dakgangjeong)",
+    "price": 75000,
+    "description": "Gà không xương chiên giòn tẩm sốt chua ngọt cay nhẹ.",
+    "dish_tags": ["gà", "chiên", "sốt"]
+  },
+  {
+    "id": 113,
+    "restaurant_id": "ChIJ3Vks1yQvdTERj0-9LppzbrA",
+    "dish_name": "Tokbokki Ramen",
+    "price": 65000,
+    "description": "Sự kết hợp giữa bánh gạo cay và mì gói Hàn Quốc.",
+    "dish_tags": ["mì", "bánh gạo", "cay"]
+  },
+  {
+    "id": 114,
+    "restaurant_id": "ChIJ3Vks1yQvdTERj0-9LppzbrA",
+    "dish_name": "Súp Chả Cá",
+    "price": 50000,
+    "description": "Canh thanh ngọt với xiên chả cá Hàn Quốc nóng hổi.",
+    "dish_tags": ["canh", "chả cá", "nước"]
+  },
+  {
+    "id": 115,
+    "restaurant_id": "ChIJ3Vks1yQvdTERj0-9LppzbrA",
+    "dish_name": "Miến Trộn Bò",
+    "price": 65000,
+    "description": "Miến khoai lang dai dai trộn dầu mè, rau củ và thịt bò.",
+    "dish_tags": ["miến", "bò", "trộn"]
+  },
+  {
+    "id": 116,
+    "restaurant_id": "ChIJJ_YTX4IvdTER-Bo0wjUNwdE",
+    "dish_name": "Bingsu Dưa Lưới",
+    "price": 160000,
+    "description": "Đá bào sữa tuyết mịn màng phủ đầy dưa lưới tươi ngọt mát.",
+    "dish_tags": ["bingsu", "tráng miệng", "dưa lưới"]
+  },
+  {
+    "id": 117,
+    "restaurant_id": "ChIJJ_YTX4IvdTER-Bo0wjUNwdE",
+    "dish_name": "Bingsu Xoài",
+    "price": 150000,
+    "description": "Bingsu mát lạnh với sốt xoài và những miếng xoài chín mọng.",
+    "dish_tags": ["bingsu", "xoài", "ngọt"]
+  },
+  {
+    "id": 118,
+    "restaurant_id": "ChIJJ_YTX4IvdTER-Bo0wjUNwdE",
+    "dish_name": "Bingsu Chocolate",
+    "price": 140000,
+    "description": "Đậm đà vị cacao, topping bánh oreo và sốt chocolate.",
+    "dish_tags": ["bingsu", "chocolate", "đắng nhẹ"]
+  },
+  {
+    "id": 119,
+    "restaurant_id": "ChIJJ_YTX4IvdTER-Bo0wjUNwdE",
+    "dish_name": "Bánh Cá Nhân Phô Mai",
+    "price": 40000,
+    "description": "Bánh nướng hình cá giòn vỏ, nhân phô mai kéo sợi.",
+    "dish_tags": ["bánh", "phô mai", "ăn vặt"]
+  },
+  {
+    "id": 120,
+    "restaurant_id": "ChIJJ_YTX4IvdTER-Bo0wjUNwdE",
+    "dish_name": "Trà Đào Đá Xay",
+    "price": 60000,
+    "description": "Thức uống đá xay mát lạnh vị trà đào thơm lừng.",
+    "dish_tags": ["đồ uống", "đá xay", "đào"]
+  },
+  {
+    "id": 121,
+    "restaurant_id": "ChIJW3XUti4vdTEROwTSqtSbq1I",
+    "dish_name": "Phở Gà Đặc Biệt",
+    "price": 75000,
+    "description": "Nước dùng gà thanh ngọt, thịt gà ta dai ngon da giòn.",
+    "dish_tags": ["phở", "gà", "nước"]
+  },
+  {
+    "id": 122,
+    "restaurant_id": "ChIJW3XUti4vdTEROwTSqtSbq1I",
+    "dish_name": "Miến Gà",
+    "price": 70000,
+    "description": "Miến dong dai không nát, ăn cùng thịt gà xé phay.",
+    "dish_tags": ["miến", "gà", "nhẹ bụng"]
+  },
+  {
+    "id": 123,
+    "restaurant_id": "ChIJW3XUti4vdTEROwTSqtSbq1I",
+    "dish_name": "Gỏi Gà (Dĩa nhỏ)",
+    "price": 100000,
+    "description": "Gà xé trộn hành tây, rau răm chua ngọt kích thích vị giác.",
+    "dish_tags": ["gỏi", "gà", "ăn kèm"]
+  },
+  {
+    "id": 124,
+    "restaurant_id": "ChIJW3XUti4vdTEROwTSqtSbq1I",
+    "dish_name": "Chén Trứng Non",
+    "price": 45000,
+    "description": "Trứng non lòng đào béo ngậy, chan nước lèo nóng hổi.",
+    "dish_tags": ["trứng", "thêm", "béo"]
+  },
+  {
+    "id": 125,
+    "restaurant_id": "ChIJW3XUti4vdTEROwTSqtSbq1I",
+    "dish_name": "Hủ Tiếu Gà",
+    "price": 70000,
+    "description": "Sợi hủ tiếu dai mềm, kết hợp nước lèo gà ngọt xương.",
+    "dish_tags": ["hủ tiếu", "gà", "nước"]
+  },
+  {
+    "id": 126,
+    "restaurant_id": "ChIJfYtYmHkvdTERhCNHqNTzQ48",
+    "dish_name": "Pizza 4 Cheese (Kèm Mật Ong)",
+    "price": 280000,
+    "description": "Sự hòa quyện của 4 loại phô mai hảo hạng, ngon hơn khi rưới mật ong.",
+    "dish_tags": ["pizza", "phô mai", "mật ong"]
+  },
+  {
+    "id": 127,
+    "restaurant_id": "ChIJfYtYmHkvdTERhCNHqNTzQ48",
+    "dish_name": "Mì Ý Cua (Crab Tomato Cream)",
+    "price": 260000,
+    "description": "Mì Ý sốt kem cà chua và thịt cua tươi, món ăn trứ danh của 4P's.",
+    "dish_tags": ["mì ý", "cua", "kem"]
+  },
+  {
+    "id": 128,
+    "restaurant_id": "ChIJfYtYmHkvdTERhCNHqNTzQ48",
+    "dish_name": "Salad Phô Mai Burrata (Cỡ nhỏ)",
+    "price": 190000,
+    "description": "Phô mai Burrata tươi béo ngậy dùng kèm cà chua và rau Rocket.",
+    "dish_tags": ["salad", "phô mai", "khai vị"]
+  },
+  {
+    "id": 129,
+    "restaurant_id": "ChIJfYtYmHkvdTERhCNHqNTzQ48",
+    "dish_name": "Pizza Cá Hồi Sashimi",
+    "price": 310000,
+    "description": "Pizza lạnh độc đáo với cá hồi tươi sống và sốt kem.",
+    "dish_tags": ["pizza", "cá hồi", "sashimi"]
+  },
+  {
+    "id": 130,
+    "restaurant_id": "ChIJfYtYmHkvdTERhCNHqNTzQ48",
+    "dish_name": "Pizza Bò Bulgogi",
+    "price": 270000,
+    "description": "Hương vị thịt bò nướng Bulgogi Hàn Quốc trên nền Pizza Ý.",
+    "dish_tags": ["pizza", "bò", "fusion"]
+  },
+  {
+    "id": 131,
+    "restaurant_id": "ChIJcwyUxjgvdTERFwXMvGKDY0U",
+    "dish_name": "Bánh Xèo Mẹ Ỉn",
+    "price": 120000,
+    "description": "Bánh xèo miền Tây vỏ giòn, nhân tôm thịt đầy đặn, rau rừng ăn kèm.",
+    "dish_tags": ["bánh xèo", "truyền thống", "cuốn"]
+  },
+  {
+    "id": 132,
+    "restaurant_id": "ChIJcwyUxjgvdTERFwXMvGKDY0U",
+    "dish_name": "Cơm Chiên Trái Dừa",
+    "price": 110000,
+    "description": "Cơm chiên hạt sen, tôm thịt được trình bày trong trái dừa tươi.",
+    "dish_tags": ["cơm", "dừa", "đặc sản"]
+  },
+  {
+    "id": 133,
+    "restaurant_id": "ChIJcwyUxjgvdTERFwXMvGKDY0U",
+    "dish_name": "Gà Nướng Ống Tre",
+    "price": 180000,
+    "description": "Gà ướp gia vị núi rừng nướng trong ống tre giữ trọn vị ngọt.",
+    "dish_tags": ["gà", "nướng", "dân dã"]
+  },
+  {
+    "id": 134,
+    "restaurant_id": "ChIJcwyUxjgvdTERFwXMvGKDY0U",
+    "dish_name": "Gỏi Cuốn Tôm Thịt",
+    "price": 80000,
+    "description": "Gỏi cuốn chắc tay với tôm tươi, thịt luộc và bún, chấm tương đen.",
+    "dish_tags": ["cuốn", "tôm", "khai vị"]
+  },
+  {
+    "id": 135,
+    "restaurant_id": "ChIJcwyUxjgvdTERFwXMvGKDY0U",
+    "dish_name": "Chả Giò Rế",
+    "price": 90000,
+    "description": "Chả giò vỏ rế giòn tan, nhân khoai môn và hải sản.",
+    "dish_tags": ["chả giò", "chiên", "giòn"]
+  },
+  {
+    "id": 136,
+    "restaurant_id": "ChIJoz2M2EgvdTERLFRcCOtuC70",
+    "dish_name": "Bánh Xèo Tôm Nhảy",
+    "price": 115000,
+    "description": "Bánh xèo miền Trung nhỏ giòn với những con tôm đất tươi rói.",
+    "dish_tags": ["bánh xèo", "tôm", "đặc sản"]
+  },
+  {
+    "id": 137,
+    "restaurant_id": "ChIJoz2M2EgvdTERLFRcCOtuC70",
+    "dish_name": "Bún Bò Huế",
+    "price": 95000,
+    "description": "Tô bún bò đậm đà hương mắm ruốc, đầy đủ giò heo và chả cua.",
+    "dish_tags": ["bún", "bò", "huế"]
+  },
+  {
+    "id": 138,
+    "restaurant_id": "ChIJoz2M2EgvdTERLFRcCOtuC70",
+    "dish_name": "Gỏi Củ Hủ Dừa Tôm Thịt",
+    "price": 160000,
+    "description": "Vị giòn ngọt của củ hủ dừa trộn cùng tôm thịt và nước mắm chua ngọt.",
+    "dish_tags": ["gỏi", "dừa", "thanh mát"]
+  },
+  {
+    "id": 139,
+    "restaurant_id": "ChIJoz2M2EgvdTERLFRcCOtuC70",
+    "dish_name": "Chè Sương Sa Hạt Lựu",
+    "price": 55000,
+    "description": "Món tráng miệng mát lạnh, màu sắc bắt mắt với nước cốt dừa béo.",
+    "dish_tags": ["chè", "tráng miệng", "ngọt"]
+  },
+  {
+    "id": 140,
+    "restaurant_id": "ChIJoz2M2EgvdTERLFRcCOtuC70",
+    "dish_name": "Nem Nướng Nha Trang",
+    "price": 130000,
+    "description": "Nem nướng thơm lừng cuốn bánh tráng rau sống và nước chấm tương nếp.",
+    "dish_tags": ["nem", "nướng", "cuốn"]
+  },
+  {
+    "id": 141,
+    "restaurant_id": "ChIJH9N0fTgvdTERUasnXPXIBGU",
+    "dish_name": "Kho Quẹt Rau Luộc",
+    "price": 120000,
+    "description": "Đĩa rau vườn luộc xanh mướt chấm cùng kho quẹt tôm khô tóp mỡ.",
+    "dish_tags": ["rau", "kho quẹt", "dân dã"]
+  },
+  {
+    "id": 142,
+    "restaurant_id": "ChIJH9N0fTgvdTERUasnXPXIBGU",
+    "dish_name": "Canh Chua Cá Lóc",
+    "price": 150000,
+    "description": "Canh chua chuẩn vị miền Tây với bông điên điển và cá lóc đồng.",
+    "dish_tags": ["canh", "cá", "chua"]
+  },
+  {
+    "id": 143,
+    "restaurant_id": "ChIJH9N0fTgvdTERUasnXPXIBGU",
+    "dish_name": "Cá Kèo Kho Rau Răm",
+    "price": 140000,
+    "description": "Cá kèo kho tộ cứng thịt, thơm nồng mùi rau răm và tiêu.",
+    "dish_tags": ["cá", "kho", "mặn"]
+  },
+  {
+    "id": 144,
+    "restaurant_id": "ChIJH9N0fTgvdTERUasnXPXIBGU",
+    "dish_name": "Bánh Khọt Cốt Dừa",
+    "price": 110000,
+    "description": "Bánh khọt vàng ươm, béo ngậy vị cốt dừa, nhân tôm tươi.",
+    "dish_tags": ["bánh khọt", "dừa", "miền tây"]
+  },
+  {
+    "id": 145,
+    "restaurant_id": "ChIJH9N0fTgvdTERUasnXPXIBGU",
+    "dish_name": "Chè Bà Ba",
+    "price": 45000,
+    "description": "Chè nấu từ khoai lang, đậu xanh, bột báng và nước cốt dừa.",
+    "dish_tags": ["chè", "ngọt", "tráng miệng"]
+  },
+  {
+    "id": 146,
+    "restaurant_id": "ChIJJSRONbovdTERyqDnjqShlKc",
+    "dish_name": "Phở Đặc Biệt (Tô Đá)",
+    "price": 120000,
+    "description": "Phở được phục vụ trong thố đá nóng hổi, giữ nhiệt lâu.",
+    "dish_tags": ["phở", "thố đá", "đặc biệt"]
+  },
+  {
+    "id": 147,
+    "restaurant_id": "ChIJJSRONbovdTERyqDnjqShlKc",
+    "dish_name": "Phở Tái Lăn",
+    "price": 90000,
+    "description": "Thịt bò xào lăn thơm lừng tỏi, nước dùng béo ngậy.",
+    "dish_tags": ["phở", "tái lăn", "béo"]
+  },
+  {
+    "id": 148,
+    "restaurant_id": "ChIJJSRONbovdTERyqDnjqShlKc",
+    "dish_name": "Phở Gầu Giòn",
+    "price": 90000,
+    "description": "Gầu bò vàng ươm, giòn sần sật, không bị ngấy.",
+    "dish_tags": ["phở", "gầu", "giòn"]
+  },
+  {
+    "id": 149,
+    "restaurant_id": "ChIJJSRONbovdTERyqDnjqShlKc",
+    "dish_name": "Quẩy Nóng (Dĩa)",
+    "price": 15000,
+    "description": "Quẩy chiên giòn tan, nhúng nước phở cực hợp.",
+    "dish_tags": ["quẩy", "ăn kèm", "chiên"]
+  },
+  {
+    "id": 150,
+    "restaurant_id": "ChIJJSRONbovdTERyqDnjqShlKc",
+    "dish_name": "Trứng Trần Nước Tiết",
+    "price": 20000,
+    "description": "Chén trứng trần béo bổ trong nước tiết đậm đà.",
+    "dish_tags": ["trứng", "tiết", "bổ dưỡng"]
   }
 ]
