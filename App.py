@@ -7,6 +7,8 @@ import core.database
 
 #IMPORT ROUTES
 from routes.food import food_bp
+# ⭐️ THÊM IMPORT reviews_route VÀO ĐÂY (để đăng ký route) ⭐️
+from routes.food import reviews_route 
 from routes.user import user_bp 
 from routes.chatbot import chatbot_bp
 from routes.map import map_bp
@@ -14,10 +16,12 @@ from routes.map import map_bp
 app = Flask(__name__)
 CORS(app)
 
+
 app.register_blueprint(food_bp, url_prefix='/api')
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(chatbot_bp, url_prefix="/api")
 app.register_blueprint(map_bp, url_prefix="/api")
+
 
 if __name__ == '__main__':
     print("🚀 Khởi động Flask app trên port 5000...")
