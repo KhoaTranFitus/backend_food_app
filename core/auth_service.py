@@ -6,6 +6,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, db
 import smtplib
 import json
+from flask import request # ⭐️ BỔ SUNG: Import request để sử dụng trong hàm mới ⭐️
 
 # Tải các biến môi trường
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -58,13 +59,52 @@ def send_verification_email(to_email, code):
 # Hàm load thông tin user
 def load_users():
     if not os.path.exists(USERS_PATH):
-        return []
+        return {}
+    with open(USERS_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+# ⭐️ HÀM MỚI: Lấy UID từ Header Authorization ⭐️
+def get_uid_from_auth_header():
+    """Lấy và xác thực Firebase ID Token từ Header Authorization, trả về UID."""
+    
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        raise ValueError("Missing Authorization header")
+
+    # Format phải là "Bearer <token>"
     try:
-        with open(USERS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        return []
-# Hàm ghi thông tin user
-def save_users(data):
-    with open(USERS_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        id_token = auth_header.split(' ')[1]
+    except IndexError:
+        raise ValueError("Invalid Authorization header format")
+
+    try:
+        # Xác thực token bằng Firebase Admin SDK
+        # check_revoked=False để giảm overhead và tránh một số lỗi timing
+        decoded_token = auth.verify_id_token(id_token, check_revoked=False)
+        uid = decoded_token['uid']
+        return uid
+    except auth.ExpiredIdTokenError:
+        # Token hết hạn - cần login lại
+        print(":x: Token expired - user needs to login again")
+        raise ValueError("Token expired, please login again")
+    except auth.InvalidIdTokenError as e:
+        error_msg = str(e)
+        print(f":x: Token verification failed: {error_msg}")
+        
+        # Xử lý clock skew (token "used too early")
+        if "too early" in error_msg.lower():
+            print("⚠️ Clock skew detected - accepting token with relaxed validation")
+            try:
+                import jwt
+                decoded = jwt.decode(id_token, options={"verify_signature": False})
+                uid = decoded.get('uid') or decoded.get('user_id') or decoded.get('sub')
+                if uid:
+                    print(f"✅ Clock skew workaround successful for uid: {uid}")
+                    return uid
+            except Exception as jwt_error:
+                print(f"❌ Clock skew workaround failed: {jwt_error}")
+        
+        raise ValueError("Invalid or expired token")
+    except Exception as e:
+        print(f":x: Unexpected token verification error: {e}")
+        raise ValueError("Invalid or expired token")

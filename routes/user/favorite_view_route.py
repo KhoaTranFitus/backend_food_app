@@ -1,15 +1,17 @@
 from flask import request, jsonify
 from firebase_admin import db
 from . import user_bp
+from core.auth_service import get_uid_from_auth_header # Cần import
 
-@user_bp.route("/favorite/view", methods=["POST"])
+# ⭐️ ROUTE ĐÃ SỬA: Lấy UID từ Token và dùng GET ⭐️
+@user_bp.route("/favorite/view", methods=["GET"])
 def favorite_view():
-    data = request.get_json(force=True, silent=True) or {}
-
-    user_id = data.get("user_id")
-
-    if not user_id:
-        return jsonify({"error": "Thiếu user_id"}), 400
+    # 1. Lấy user_id từ token (An toàn)
+    try:
+        user_id = get_uid_from_auth_header() 
+    except Exception as e:
+        # Nếu token không hợp lệ hoặc thiếu
+        return jsonify({"error": "Unauthorized. Vui lòng đăng nhập."}), 401
 
     user_ref = db.reference(f"users/{user_id}")
     user_data = user_ref.get()
@@ -19,15 +21,11 @@ def favorite_view():
 
     # Lấy danh sách yêu thích
     favorites = user_data.get("favorites", [])
-
-    normalized = []
-    for item in favorites:
-        try:
-            normalized.append(int(item))
-        except:
-            pass
+    
+    # Đảm bảo trả về ID dưới dạng chuỗi (đồng bộ với ID trong restaurants.json)
+    favorites_list = [str(item).strip() for item in favorites]
 
     return jsonify({
         "user_id": user_id,
-        "favorites": normalized
+        "favorites": favorites_list # Trả về list ID chuỗi
     }), 200

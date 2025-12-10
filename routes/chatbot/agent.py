@@ -59,6 +59,17 @@ def get_restaurant_context() -> str:
                 continue
     return restaurants_context
 
+def _parse_price(price_range: str) -> int:
+    """Parse price range string và trả về giá trung bình để sort"""
+    try:
+        # Format: "50,000đ-150,000đ" hoặc "50.000đ-150.000đ"
+        price_range = price_range.replace('đ', '').replace(',', '').replace('.', '')
+        prices = [int(p.strip()) for p in price_range.split('-') if p.strip().isdigit()]
+        if prices:
+            return sum(prices) // len(prices)  # Trả về giá trung bình
+    except:
+        pass
+    return 999999  # Giá rất cao nếu không parse được
 def find_restaurants_by_dish(query: str) -> List[Dict]:
     """Tìm nhà hàng theo tên món ăn từ user query"""
     try:
@@ -103,10 +114,39 @@ def find_restaurants_by_dish(query: str) -> List[Dict]:
         print(f"❌ Error in find_restaurants_by_dish: {e}")
         return []
 
-def find_restaurants_by_location(query: str) -> List[Dict]:
-    """Tìm nhà hàng theo location từ user query - sử dụng normalize_text()"""
+def find_restaurants_by_name(query: str) -> List[Dict]:
+    """Tìm nhà hàng theo TÊN QUÁN từ user query"""
     try:
-        print(f"🔍 Searching restaurants for query: {query}")
+        print(f"🏪 Searching restaurants by name: {query}")
+        
+        results = []
+        query_normalized = normalize_text(query)
+        query_words = query_normalized.split()
+        
+        for restaurant in DB_RESTAURANTS:
+            if not isinstance(restaurant, dict):
+                continue
+            
+            name_normalized = normalize_text(restaurant.get("name", ""))
+            
+            # Kiểm tra xem có từ nào trong query match với tên quán
+            match = any(word in name_normalized for word in query_words if len(word) > 2)
+            
+            if match:
+                results.append(restaurant)
+                print(f"  ✅ Found by name: {restaurant.get('name')}")
+        
+        print(f"📊 Found {len(results)} restaurants by name")
+        return results[:10]
+        
+    except Exception as e:
+        print(f"❌ Error in find_restaurants_by_name: {e}")
+        return []
+
+def find_restaurants_by_location(query: str) -> List[Dict]:
+    """Tìm nhà hàng theo ĐỊA ĐIỂM từ user query - sử dụng normalize_text()"""
+    try:
+        print(f"🔍 Searching restaurants by location: {query}")
         
         results = []
         query_normalized = normalize_text(query)  # Chuyển thành: "ho chi minh"
@@ -122,6 +162,19 @@ def find_restaurants_by_location(query: str) -> List[Dict]:
             "can tho": ["can tho"],
         }
         
+        # Kiểm tra "gần tôi" / "nearby"
+        nearby_keywords = ["gan toi", "gan day", "nearby", "near me", "o day"]
+        is_nearby_query = any(keyword in query_normalized for keyword in nearby_keywords)
+        
+        if is_nearby_query:
+            print("📍 Detected 'nearby' query - returning top restaurants")
+            # Trả về top restaurants (có thể sort theo rating)
+            sorted_restaurants = sorted(
+                [r for r in DB_RESTAURANTS if isinstance(r, dict)],
+                key=lambda x: x.get('rating', 0),
+                reverse=True
+            )
+            return sorted_restaurants[:10]
         # Tìm location nào match với query
         matched_location = None
         for location_key, variants in location_variants.items():
@@ -155,7 +208,7 @@ def find_restaurants_by_location(query: str) -> List[Dict]:
                         print(f"  ✅ Found: {restaurant.get('name')} at {restaurant.get('address')}")
                         break
         
-        print(f"📊 Total found: {len(results)} restaurants")
+        print(f"📊 Total found: {len(results)} restaurants by location")
         return results[:10]  # Return top 10
         
     except Exception as e:
@@ -164,7 +217,7 @@ def find_restaurants_by_location(query: str) -> List[Dict]:
 
 @chatbot_bp.route("/chat", methods=["POST"])
 def chat():
-    """Chat endpoint sử dụng OpenAI GPT với dữ liệu từ backend"""
+    """Chat endpoint sử dụng OpenAI GPT với dữ liệu từ backend - có memory"""
     try:
         # Validate API key
         if not API_KEY:
@@ -178,40 +231,101 @@ def chat():
         if not user_message:
             return jsonify({"error": "Message is required"}), 400
 
+        # Lấy hoặc tạo conversation_id mới
         conversation_id = data.get("conversation_id", str(uuid4()))
+        
+        # Khởi tạo conversation history nếu chưa có
+        if conversation_id not in conversations:
+            conversations[conversation_id] = []
 
-        # Tìm kiếm nhà hàng theo địa điểm và theo món ăn
+        # Tìm kiếm theo nhiều tiêu chí
         location_results = find_restaurants_by_location(user_message)
         dish_results = find_restaurants_by_dish(user_message)
+        name_results = find_restaurants_by_name(user_message)
         
-        # Logic tìm kiếm: 
-        # 1. Nếu có cả địa điểm VÀ món ăn -> lọc dish_results theo location
-        # 2. Nếu chỉ có địa điểm -> dùng location_results
-        # 3. Nếu chỉ có món ăn -> dùng dish_results
+        # Phát hiện từ khóa đặc biệt để sắp xếp
+        query_normalized = normalize_text(user_message)
+        
+        # Từ khóa liên quan đến giá
+        price_keywords = ["gia re", "re nhat", "re", "binh dan", "tiet kiem", "cheap"]
+        has_price_filter = any(keyword in query_normalized for keyword in price_keywords)
+        
+        # Từ khóa liên quan đến đánh giá
+        rating_keywords = ["ngon nhat", "tot nhat", "diem cao", "danh gia cao", "best", "top rated", "ngon", "chat luong"]
+        has_rating_filter = any(keyword in query_normalized for keyword in rating_keywords)
+        
+        # Logic tìm kiếm theo thứ tự ưu tiên:
+        # 1. Địa điểm + Món ăn -> lọc theo địa điểm trước, sau đó món ăn
+        # 2. Địa điểm + Tên quán -> lọc theo địa điểm trước, sau đó tên quán
+        # 3. Chỉ địa điểm -> dùng location_results
+        # 4. Chỉ món ăn -> dùng dish_results
+        # 5. Chỉ tên quán -> dùng name_results
+        
         search_results = []
         search_type = ""
         
+        # Case 1: Có địa điểm + món ăn
         if location_results and dish_results:
-            # Có cả 2 -> ưu tiên địa điểm, sau đó lọc theo món ăn
-            print("🔎 Có cả địa điểm và món ăn - lọc theo địa điểm trước")
-            location_ids = {r.get('place_id') or r.get('name') for r in location_results}
-            search_results = [r for r in dish_results if (r.get('place_id') or r.get('name')) in location_ids]
+            print("🔎 Có cả địa điểm và món ăn - ưu tiên địa điểm, lọc theo món ăn")
+            location_ids = {r.get('id') or r.get('name') for r in location_results}
+            search_results = [r for r in dish_results if (r.get('id') or r.get('name')) in location_ids]
             search_type = "location_and_dish"
             
-            # Nếu không có kết quả giao nhau, dùng location_results
+            # Nếu không có giao nhau, dùng location_results
             if not search_results:
                 search_results = location_results
                 search_type = "location_only"
+        
+        # Case 2: Có địa điểm + tên quán
+        elif location_results and name_results:
+            print("🔎 Có cả địa điểm và tên quán - ưu tiên địa điểm, lọc theo tên quán")
+            location_ids = {r.get('id') or r.get('name') for r in location_results}
+            search_results = [r for r in name_results if (r.get('id') or r.get('name')) in location_ids]
+            search_type = "location_and_name"
+            
+            # Nếu không có giao nhau, dùng location_results
+            if not search_results:
+                search_results = location_results
+                search_type = "location_only"
+        
+        # Case 3: Chỉ có địa điểm
         elif location_results:
             search_results = location_results
             search_type = "location_only"
+        
+        # Case 4: Chỉ có món ăn
         elif dish_results:
             search_results = dish_results
             search_type = "dish_only"
         
-        print(f"🔎 Location results: {len(location_results)}, Dish results: {len(dish_results)}")
+        # Case 5: Chỉ có tên quán
+        elif name_results:
+            search_results = name_results
+            search_type = "name_only"
+        
+        print(f"🔎 Search results - Location: {len(location_results)}, Dish: {len(dish_results)}, Name: {len(name_results)}")
         print(f"🔎 Search type: {search_type}, Total results: {len(search_results)}")
         
+        # Áp dụng filter và sort dựa trên từ khóa
+        if search_results:
+            # Nếu có từ khóa về giá rẻ -> sắp xếp theo giá tăng dần
+            if has_price_filter:
+                print("💰 Filtering by price - sorting by low to high price")
+                search_results = sorted(
+                    search_results,
+                    key=lambda x: _parse_price(x.get('price_range', '999999'))
+                )
+                search_type += "_price_sorted"
+            
+            # Nếu có từ khóa về đánh giá -> sắp xếp theo rating giảm dần
+            elif has_rating_filter:
+                print("⭐ Filtering by rating - sorting by highest rating")
+                search_results = sorted(
+                    search_results,
+                    key=lambda x: float(x.get('rating', 0)),
+                    reverse=True
+                )
+                search_type += "_rating_sorted"
         # Chuẩn bị dữ liệu nhà hàng cho prompt
         all_restaurants_data = []
         for r in search_results:
@@ -242,49 +356,100 @@ def chat():
                 print(f"⚠️  Error formatting restaurant data: {e}")
                 continue
         
-        # Convert to JSON string để đưa vào prompt
+
         restaurants_json = json.dumps(all_restaurants_data, ensure_ascii=False, indent=2)
 
         # Prepare system prompt với context về loại tìm kiếm
         search_context = ""
-        if search_type == "dish_only":
-            search_context = "\n🍽️ Người dùng hỏi về MÓN ĂN. Kết quả dưới đây là các QUÁN ĂN có món này."
-        elif search_type == "location_only":
-            search_context = "\n📍 Người dùng hỏi về ĐỊA ĐIỂM. Kết quả dưới đây là các quán ăn tại địa điểm này."
-        elif search_type == "location_and_dish":
-            search_context = "\n📍🍽️ Người dùng hỏi về MÓN ĂN tại ĐỊA ĐIỂM cụ thể. Đã lọc theo địa điểm trước, sau đó tìm món ăn."
+        base_type = search_type.replace("_price_sorted", "").replace("_rating_sorted", "")
+        
+        if base_type == "dish_only":
+            search_context = "\n🍽️ Người dùng tìm kiếm theo MÓN ĂN. Kết quả dưới đây là các QUÁN ĂN có món này."
+        elif base_type == "location_only":
+            search_context = "\n📍 Người dùng tìm kiếm theo ĐỊA ĐIỂM. Kết quả dưới đây là các quán ăn tại địa điểm này."
+        elif base_type == "location_and_dish":
+            search_context = "\n📍🍽️ Người dùng tìm kiếm MÓN ĂN tại ĐỊA ĐIỂM cụ thể. Đã ưu tiên lọc theo địa điểm trước, sau đó tìm món ăn."
+        elif base_type == "name_only":
+            search_context = "\n🏪 Người dùng tìm kiếm theo TÊN QUÁN. Kết quả dưới đây là các quán ăn có tên phù hợp."
+        elif base_type == "location_and_name":
+            search_context = "\n📍🏪 Người dùng tìm kiếm TÊN QUÁN tại ĐỊA ĐIỂM cụ thể. Đã ưu tiên lọc theo địa điểm trước, sau đó tìm theo tên quán."
+        
+        # Thêm context về sorting
+        if "_price_sorted" in search_type:
+            search_context += "\n💰 Kết quả đã được SẮP XẾP THEO GIÁ từ RẺ đến ĐẮNG (ưu tiên giá rẻ)."
+        elif "_rating_sorted" in search_type:
+            search_context += "\n⭐ Kết quả đã SẮP XẾP THEO RATING từ CAO đến THẤP."
         
         system_prompt = f"""Bạn là chatbot ẩm thực Việt Nam chuyên tư vấn về đồ ăn, nhà hàng, và nguyên liệu.
 {search_context}
 
-Dữ liệu nhà hàng liên quan từ hệ thống:
+Dữ liệu nhà hàng từ hệ thống:
 {restaurants_json}
 
 Hướng dẫn:
-1. **QUAN TRỌNG**: Luôn sử dụng dữ liệu nhà hàng trên để trả lời nếu có thông tin liên quan
+1. LUÔN sử dụng dữ liệu nhà hàng trên để trả lời nếu có
 
-2. **KHI NGƯỜI DÙNG HỎI VỀ MÓN ĂN**:
+2. **KHI TÌM KIẾM THEO MÓN ĂN**:
    - Hệ thống đã TÌM KIẾM THEO TÊN MÓN và trả về danh sách QUÁN ĂN có món đó
    - Giải thích: "Dưới đây là các quán ăn có [tên món]:"
-   - Liệt kê từng quán với: tên, địa chỉ, rating, số điện thoại
-   - Nếu có "recommended_dishes": liệt kê món ăn phù hợp với TÊN, GIÁ, MÔ TẢ
+   - Liệt kê từng quán với: tên, địa chỉ, rating, số điện thoại, giờ mở cửa, khoảng giá
+   - Nếu có "recommended_dishes": liệt kê món ăn cụ thể với TÊN, GIÁ, MÔ TẢ
 
-3. **KHI CÓ CẢ ĐỊA ĐIỂM VÀ MÓN ĂN**:
-   - Ưu tiên lọc theo ĐỊA ĐIỂM trước, sau đó tìm món ăn
-   - Giải thích: "Dưới đây là các quán ăn có [món] tại [địa điểm]:"
+3. **KHI TÌM KIẾM THEO TÊN QUÁN**:
+   - Hệ thống đã tìm theo tên quán ăn
+   - Giải thích: "Dưới đây là các quán ăn [tên quán]:"
+   - Liệt kê thông tin chi tiết của từng quán
 
-4. **Nếu có dữ liệu nhà hàng**:
-   - Liệt kê tên nhà hàng, địa chỉ, số điện thoại, rating, giờ mở cửa, khoảng giá
-   - Trả lời bằng tiếng Việt, chi tiết nhưng ngắn gọn (5-8 câu)
-   - Format dễ đọc với emoji phù hợp
+4. **KHI TÌM KIẾM THEO ĐỊA ĐIỂM**:
+   - Nếu người dùng hỏi "quán ăn gần tôi" / "gần đây" / "nearby": trả lời "Dưới đây là các quán ăn gần bạn:"
+   - Nếu hỏi địa điểm cụ thể: "Dưới đây là các quán ăn ở [địa điểm]:"
 
-5. **Nếu KHÔNG có dữ liệu**:
-   - Nói rõ: "Xin lỗi, hệ thống tôi hiện không có thông tin về [gì đó]"
-   - Có thể tư vấn chung chung về món ăn đó
+5. **KHI CÓ CẢ ĐỊA ĐIỂM VÀ (MÓN ĂN hoặc TÊN QUÁN)**:
+   - Hệ thống đã ưu tiên lọc theo ĐỊA ĐIỂM trước
+   - Giải thích rõ: "Dưới đây là các quán [món/tên quán] tại [địa điểm]:"
 
-6. Chỉ trả lời về ẩm thực, nhà hàng, món ăn Việt Nam
-7. Nếu người dùng hỏi chủ đề khác, lịch sự từ chối"""
+6. **KHI CÓ "GIÁ RẺ"**: Nhấn mạnh "Dưới đây là các quán [món] với giá rẻ nhất:", ưu tiên hiển thị khoảng giá.
 
+7. **KHI CÓ "NGON NHẤT"**: Nhấn mạnh "Dưới đây là các quán [món] ngon nhất/được đánh giá cao nhất:", ưu tiên hiển thị rating.
+
+8. **THEO DÕI NGỮ CẢNH**:
+   - Bạn có thể nhớ những gì đã nói trong cuộc trò chuyện này
+   - Khi người dùng nói "quán đầu tiên", "quán thứ 2", "quán này", "nó" -> tham chiếu đến quán đã recommend
+   - Khi người dùng đồng ý ("ok", "được", "đồng ý", "yes", "có", "thích") -> hiểu là họ muốn action với quán đó
+   - Khi người dùng yêu cầu "thêm vào yêu thích", "lưu lại", "save", "bookmark" -> gợi ý họ dùng tính năng favorite
+
+9. **Format trả lời**: Liệt kê với emoji: 📍 địa chỉ, ⭐ rating, 📞 điện thoại, 🕒 giờ mở, 💰 giá. Trả lời tiếng Việt, ngắn gọn 5-8 câu.
+
+10. **NẾU KHÔNG CÓ DỮ LIỆU**: "Xin lỗi, hệ thống tôi hiện không có thông tin về [...]"
+
+11. Chỉ trả lời về ẩm thực Việt Nam. Nếu hỏi chủ đề khác, lịch sự từ chối."""
+        # Xây dựng messages array với lịch sử
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
+            }
+        ]
+        
+        # Thêm lịch sử cuộc trò chuyện (giới hạn 10 messages gần nhất để tránh token limit)
+        history = conversations.get(conversation_id, [])
+        for msg in history[-10:]:
+            messages.append({
+                "role": "user",
+                "content": msg["user_message"]
+            })
+            messages.append({
+                "role": "assistant",
+                "content": msg["bot_response"]
+            })
+        
+        # Thêm message hiện tại
+        messages.append({
+            "role": "user",
+            "content": user_message
+        })
+        
+>>>>>>> 9c317ae1b2b5889aede8146cf27a02524a687441
         # Call OpenAI API
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
@@ -294,18 +459,9 @@ Hướng dẫn:
 
         payload = {
             "model": "gpt-4o-mini",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": user_message
-                }
-            ],
+            "messages": messages,
             "temperature": 0.7,
-            "max_tokens": 500
+            "max_tokens": 600
         }
 
         response = requests.post(url, headers=headers, json=payload, timeout=30)
@@ -328,12 +484,17 @@ Hướng dẫn:
 
         bot_response = result["choices"][0]["message"]["content"]
 
-        # Save conversation
-        conversations.setdefault(conversation_id, []).append({
+        # Lưu conversation với metadata
+        conversation_entry = {
             "user_message": user_message,
             "bot_response": bot_response,
-            "timestamp": datetime.now().isoformat()
-        })
+            "timestamp": datetime.now().isoformat(),
+            "search_type": search_type,
+            "restaurants_found": len(search_results),
+            "restaurant_names": [r.get("name") for r in search_results[:5]] if search_results else []
+        }
+        
+        conversations[conversation_id].append(conversation_entry)
 
         return jsonify({
             "conversation_id": conversation_id,
