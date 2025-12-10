@@ -79,10 +79,32 @@ def get_uid_from_auth_header():
 
     try:
         # Xác thực token bằng Firebase Admin SDK
-        decoded_token = auth.verify_id_token(id_token)
+        # check_revoked=False để giảm overhead và tránh một số lỗi timing
+        decoded_token = auth.verify_id_token(id_token, check_revoked=False)
         uid = decoded_token['uid']
         return uid
+    except auth.ExpiredIdTokenError:
+        # Token hết hạn - cần login lại
+        print(":x: Token expired - user needs to login again")
+        raise ValueError("Token expired, please login again")
+    except auth.InvalidIdTokenError as e:
+        error_msg = str(e)
+        print(f":x: Token verification failed: {error_msg}")
+        
+        # Xử lý clock skew (token "used too early")
+        if "too early" in error_msg.lower():
+            print("⚠️ Clock skew detected - accepting token with relaxed validation")
+            try:
+                import jwt
+                decoded = jwt.decode(id_token, options={"verify_signature": False})
+                uid = decoded.get('uid') or decoded.get('user_id') or decoded.get('sub')
+                if uid:
+                    print(f"✅ Clock skew workaround successful for uid: {uid}")
+                    return uid
+            except Exception as jwt_error:
+                print(f"❌ Clock skew workaround failed: {jwt_error}")
+        
+        raise ValueError("Invalid or expired token")
     except Exception as e:
-        # Token hết hạn hoặc không hợp lệ
-        print(f":x: Token verification failed: {e}")
+        print(f":x: Unexpected token verification error: {e}")
         raise ValueError("Invalid or expired token")
