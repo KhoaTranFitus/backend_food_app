@@ -449,7 +449,7 @@ Hướng dẫn:
             "content": user_message
         })
         
->>>>>>> 9c317ae1b2b5889aede8146cf27a02524a687441
+
         # Call OpenAI API
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
