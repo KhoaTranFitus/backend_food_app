@@ -2,16 +2,55 @@
 
 from flask import request, jsonify
 from . import food_bp
-# ⭐️ IMPORT ĐÃ ĐƯỢC KHẮC PHỤC ⭐️
-from core.database import RESTAURANTS 
+from core.database import RESTAURANTS, DB_RESTAURANTS, MENUS_BY_RESTAURANT_ID
+from core.search import search_algorithm
 
 @food_bp.route("/restaurants", methods=["GET"])
 def get_all_restaurants():
-    """Trả về toàn bộ danh sách nhà hàng đã load từ restaurants.json."""
+    """
+    GET /api/restaurants
+    Hỗ trợ cả: 
+    - Lấy tất cả (không params)
+    - Tìm kiếm với params: query, province, lat, lon, radius
+    """
+    # Lấy query params
+    query = request.args.get('query', '').strip()
+    province = request.args.get('province', '').strip()
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    radius = request.args.get('radius')
     
-    # Lấy toàn bộ giá trị (data) từ dictionary RESTAURANTS
+    # Nếu có bất kỳ search params nào -> Dùng search algorithm
+    if query or province or (lat and lon):
+        # Convert types
+        try:
+            user_lat = float(lat) if lat else None
+            user_lon = float(lon) if lon else None
+            # Frontend gửi radius (meters), backend dùng km
+            # Nhưng search_algorithm tự xử lý bán kính theo logic
+        except (ValueError, TypeError):
+            user_lat = None
+            user_lon = None
+        
+        # Gọi search algorithm
+        results = search_algorithm(
+            query=query,
+            restaurants_db=DB_RESTAURANTS,
+            menus_by_res_id=MENUS_BY_RESTAURANT_ID,
+            restaurants_dict=RESTAURANTS,
+            province=province,
+            user_lat=user_lat,
+            user_lon=user_lon
+        )
+        
+        return jsonify({
+            "success": True,
+            "count": len(results),
+            "restaurants": results
+        }), 200
+    
+    # Không có params -> Trả về tất cả
     restaurant_list = list(RESTAURANTS.values())
-
     return jsonify({
         "success": True,
         "count": len(restaurant_list),
@@ -20,16 +59,14 @@ def get_all_restaurants():
 
 
 @food_bp.route("/restaurants/search", methods=["GET"])
-def search_restaurants():
-    """Tìm kiếm nhà hàng theo query (dành cho thanh search)."""
-    
+def search_restaurants_simple():
+    """Tìm kiếm đơn giản theo query string (legacy endpoint)."""
     query = request.args.get('q', '').lower()
     
-    # Nếu không có query, trả về tất cả
     if not query:
         return get_all_restaurants()
 
-    # Logic tìm kiếm đơn giản (lọc theo tên hoặc địa chỉ)
+    # Tìm kiếm đơn giản theo tên hoặc địa chỉ
     results = [
         r for r in list(RESTAURANTS.values())
         if query in r.get('name', '').lower() or query in r.get('address', '').lower()
