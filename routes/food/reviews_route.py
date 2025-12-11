@@ -2,13 +2,13 @@
 
 from flask import request, jsonify
 from firebase_admin import db
-from . import food_bp                          # <--- FIX LỖI NAMERROR 'food_bp'
+from . import food_bp                          
 from core.auth_service import get_uid_from_auth_header 
 from core.database import RESTAURANTS 
 import time
-import operator                               # <--- THÊM IMPORT ĐỂ SẮP XẾP PYTHON
+import operator                               
 
-# ⭐️ HỆ SỐ TIN CẬY (N_MIN): Trọng số của điểm rating ban đầu ⭐️
+# HỆ SỐ TIN CẬY (N_MIN): Trọng số của điểm rating ban đầu 
 N_MIN = 10 
 
 def _calculate_new_rating(restaurant_id):
@@ -32,14 +32,17 @@ def _calculate_new_rating(restaurant_id):
     
     if reviews_dict:
         for review in reviews_dict.values():
-            total_app_rating += int(review.get('rating', 0))
-            count_app_ratings += 1
+            try:
+                total_app_rating += int(review.get('rating', 0))
+                count_app_ratings += 1
+            except (ValueError, TypeError):
+                pass 
             
-    # Áp dụng công thức Weighted Average Rating
+    # Công thức Weighted Average Rating
     numerator = (source_rating * N_MIN) + total_app_rating
     denominator = N_MIN + count_app_ratings
     
-    if denominator == 0:
+    if denominator <= 0:
         return source_rating 
         
     new_weighted_rating = numerator / denominator
@@ -49,6 +52,7 @@ def _calculate_new_rating(restaurant_id):
 
 # ==========================================================
 # ROUTE 1: TẠO/GỬI ĐÁNH GIÁ (POST)
+# Endpoint: /api/food/reviews
 # ==========================================================
 @food_bp.route("/reviews", methods=["POST"])
 def create_review():
@@ -80,10 +84,16 @@ def create_review():
     timestamp = int(time.time() * 1000)
     review_key = f"{target_id}_{user_id}_{timestamp}" 
 
-    user_ref = db.reference(f"users/{user_id}")
-    user_data = user_ref.get()
-    user_name = user_data.get("name", "Người dùng hiện tại") if user_data else "Người dùng hiện tại"
-    avatar_url = user_data.get("avatar_url") 
+    user_name = "Người dùng hiện tại"
+    avatar_url = None
+    try:
+        user_ref = db.reference(f"users/{user_id}")
+        user_data = user_ref.get()
+        if user_data:
+            user_name = user_data.get("name", "Người dùng hiện tại")
+            avatar_url = user_data.get("avatar_url") 
+    except Exception:
+        pass # Nếu lỗi đọc user data thì vẫn tiếp tục
 
     review_data = {
         "id": review_key,
@@ -112,47 +122,41 @@ def create_review():
              rating_ref.set(new_weighted_rating)
              response_data['review']['new_restaurant_rating'] = new_weighted_rating
              
-        print(f"✅ ĐÃ LƯU ĐÁNH GIÁ: Restaurant {target_id}. New Rating: {new_weighted_rating}")
+        print(f"✅ LƯU REVIEW THÀNH CÔNG. Restaurant {target_id}. New Rating: {new_weighted_rating}")
         
         return jsonify(response_data), 201
 
     except Exception as e:
-        print(f"Lỗi khi lưu đánh giá vào Firebase: {e}")
-        return jsonify({"error": "Lỗi server khi lưu đánh giá."}), 500
+        print(f"🔥 LỖI GHI FIREBASE: {e}")
+        return jsonify({"error": "Lỗi server khi lưu đánh giá. Kiểm tra Firebase Rules."}), 500
 
 
 # ==========================================================
-# ROUTE 2: TẢI ĐÁNH GIÁ (GET) - Đã FIX logic sắp xếp
+# ROUTE 2: TẢI ĐÁNH GIÁ (GET)
 # Endpoint: /api/food/reviews/restaurant/<restaurant_id>
 # ==========================================================
 @food_bp.route("/reviews/restaurant/<restaurant_id>", methods=["GET"])
 def get_restaurant_reviews(restaurant_id):
     """
-    Lấy đánh giá cho một nhà hàng cụ thể (đã FIX lỗi truy vấn Firebase).
+    Lấy đánh giá và điểm rating mới nhất cho một nhà hàng.
     """
     
     try:
-        # 1. Lấy toàn bộ dữ liệu đánh giá từ Firebase (Không dùng query để tránh lỗi)
         reviews_ref = db.reference(f"reviews_by_restaurant/{restaurant_id}")
         reviews_dict = reviews_ref.get()
 
         if not reviews_dict:
             reviews_list = []
         else:
-            # Chuyển từ dictionary sang list
             reviews_list = list(reviews_dict.values())
-            
-            # ⭐️ [FIX] Sắp xếp bằng Python theo trường 'timestamp' (mới nhất lên đầu) ⭐️
             reviews_list.sort(key=operator.itemgetter('timestamp'), reverse=True)
-            
-            # Giới hạn 20 review mới nhất (nếu cần giới hạn hiển thị)
             reviews_list = reviews_list[:20]
         
-        # 2. Lấy điểm rating đã cập nhật nếu có
+        # Lấy điểm rating đã cập nhật 
         rating_ref = db.reference(f"restaurants_rating/{restaurant_id}/rating")
         current_rating = rating_ref.get()
         
-        # 3. Trả về
+        # Trả về cả danh sách reviews VÀ rating mới nhất
         return jsonify({
             "success": True,
             "count": len(reviews_list),
@@ -166,32 +170,8 @@ def get_restaurant_reviews(restaurant_id):
 
 
 # ==========================================================
-# ROUTE 3: LẤY RATING NHANH 
-# ==========================================================
-@food_bp.route("/rating/<restaurant_id>", methods=["GET"])
-def get_single_restaurant_rating(restaurant_id):
-    """Lấy điểm rating có trọng số (Weighted Average Rating) mới nhất."""
-    try:
-        rating_ref = db.reference(f"restaurants_rating/{restaurant_id}/rating")
-        current_rating = rating_ref.get()
-        
-        if current_rating is None:
-            res_data = RESTAURANTS.get(restaurant_id)
-            source_rating = float(res_data.get('rating', 0)) if res_data else 0
-            current_rating = source_rating
-
-        return jsonify({
-            "success": True,
-            "rating": current_rating 
-        }), 200
-        
-    except Exception as e:
-        print(f"Lỗi khi tải rating đơn lẻ: {e}")
-        return jsonify({"error": "Lỗi server khi tải rating."}), 500
-
-
-# ==========================================================
-# ROUTE 4: XÓA ĐÁNH GIÁ (DELETE)
+# ROUTE 3: XÓA ĐÁNH GIÁ (DELETE)
+# Endpoint: /api/food/reviews/<review_id>
 # ==========================================================
 @food_bp.route("/reviews/<review_id>", methods=["DELETE"])
 def delete_review(review_id):
@@ -226,8 +206,6 @@ def delete_review(review_id):
              rating_ref = db.reference(f"restaurants_rating/{target_id}/rating")
              rating_ref.set(new_weighted_rating)
 
-        print(f"✅ ĐÃ XÓA ĐÁNH GIÁ: Review {review_id} bởi User {user_id}. New Rating: {new_weighted_rating}")
-        
         return jsonify({
             "message": "Đánh giá đã được xóa thành công.",
             "new_restaurant_rating": new_weighted_rating
