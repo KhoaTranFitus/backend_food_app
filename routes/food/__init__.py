@@ -12,3 +12,4 @@ from . import reviews_route
 from . import restaurants_extra_route
 from . import food_search_route
 from . import category_route
+from . import get_menu_by_restaurant

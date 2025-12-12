@@ -63,19 +63,19 @@ def get_foods_by_category(category_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@food_bp.route('/foods/restaurant/<int:restaurant_id>', methods=['GET'])
-def get_foods_by_restaurant(restaurant_id):
-    """Lấy danh sách món ăn của một nhà hàng."""
-    try:
-        results = [
-            f for f in DB_MENUS 
-            if str(f.get('restaurant_id')) == str(restaurant_id)
-        ]
+#@food_bp.route('/foods/restaurant/<int:restaurant_id>', methods=['GET'])
+#def get_foods_by_restaurant(restaurant_id):
+ #   """Lấy danh sách món ăn của một nhà hàng."""
+  #  try:
+   #     results = [
+    #        f for f in DB_MENUS 
+     #       if str(f.get('restaurant_id')) == str(restaurant_id)
+      #  ]
         
-        return jsonify({
-            "success": True,
-            "count": len(results),
-            "foods": results
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+       # return jsonify({
+        #    "success": True,
+         #   "count": len(results),
+          #  "foods": results
+     #   })
+   # except Exception as e:
+    #    return jsonify({"error": str(e)}), 500
