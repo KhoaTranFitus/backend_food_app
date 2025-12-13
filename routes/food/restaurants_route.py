@@ -4,6 +4,7 @@ from flask import request, jsonify
 from . import food_bp
 from core.database import RESTAURANTS, DB_RESTAURANTS, MENUS_BY_RESTAURANT_ID
 from core.search import search_algorithm
+from firebase_admin import db
 
 @food_bp.route("/restaurants", methods=["GET"])
 def get_all_restaurants():
@@ -12,6 +13,7 @@ def get_all_restaurants():
     Hỗ trợ cả: 
     - Lấy tất cả (không params)
     - Tìm kiếm với params: query, province, lat, lon, radius
+    - Cập nhật Rating từ Firebase cho cả hai trường hợp
     """
     # Lấy query params
     query = request.args.get('query', '').strip()
@@ -43,6 +45,9 @@ def get_all_restaurants():
             user_lon=user_lon
         )
         
+        # Cập nhật rating từ Firebase cho kết quả tìm kiếm
+        _sync_ratings_from_firebase(results)
+        
         return jsonify({
             "success": True,
             "count": len(results),
@@ -51,11 +56,40 @@ def get_all_restaurants():
     
     # Không có params -> Trả về tất cả
     restaurant_list = list(RESTAURANTS.values())
+    
+    # Cập nhật rating từ Firebase cho toàn bộ danh sách
+    _sync_ratings_from_firebase(restaurant_list)
+    
     return jsonify({
         "success": True,
         "count": len(restaurant_list),
         "restaurants": restaurant_list
     }), 200
+
+
+def _sync_ratings_from_firebase(restaurant_list):
+    """
+    Hàm helper: Đồng bộ rating từ Firebase vào danh sách nhà hàng.
+    Cập nhật in-place.
+    """
+    try:
+        # Lấy một lần toàn bộ node rating (tối ưu hơn là for loop gọi DB nhiều lần)
+        ratings_ref = db.reference("restaurants_rating")
+        ratings_snapshot = ratings_ref.get()  # Kết quả dạng: { "id_nha_hang": {"rating": 4.5}, ... }
+        
+        if ratings_snapshot:
+            for res in restaurant_list:
+                res_id = str(res.get('id'))
+                # Nếu nhà hàng này có rating mới trên Firebase
+                if res_id in ratings_snapshot:
+                    new_data = ratings_snapshot[res_id]
+                    # Ghi đè rating mới vào dữ liệu trả về
+                    if 'rating' in new_data:
+                        res['rating'] = new_data['rating']
+                        
+    except Exception as e:
+        print(f"⚠️ Lỗi khi đồng bộ rating từ Firebase: {e}")
+        # Nếu lỗi thì vẫn trả về list cũ, không làm crash app
 
 
 @food_bp.route("/restaurants/search", methods=["GET"])
