@@ -1,11 +1,10 @@
 # routes/food/restaurants_route.py
 
 from flask import request, jsonify
-from firebase_admin import db # <--- THÊM IMPORT NÀY
+from firebase_admin import db
 from . import food_bp
 from core.database import RESTAURANTS, DB_RESTAURANTS, MENUS_BY_RESTAURANT_ID
 from core.search import search_algorithm
-from firebase_admin import db
 
 @food_bp.route("/restaurants", methods=["GET"])
 def get_all_restaurants():
@@ -61,7 +60,6 @@ def get_all_restaurants():
     # Cập nhật rating từ Firebase cho toàn bộ danh sách
     _sync_ratings_from_firebase(restaurant_list)
     
-
     return jsonify({
         "success": True,
         "count": len(restaurant_list),
@@ -95,14 +93,6 @@ def _sync_ratings_from_firebase(restaurant_list):
 
 
 @food_bp.route("/restaurants/search", methods=["GET"])
-def search_restaurants():
-    """Tìm kiếm nhà hàng (Cũng cần cập nhật Rating)."""
-    
-    query = request.args.get('q', '').lower()
-    
-    # Logic tìm kiếm
-    all_res = list(RESTAURANTS.values())
-
 def search_restaurants_simple():
     """Tìm kiếm đơn giản theo query string (legacy endpoint)."""
     query = request.args.get('q', '').lower()
@@ -111,7 +101,7 @@ def search_restaurants_simple():
         return get_all_restaurants()
 
     # Tìm kiếm đơn giản theo tên hoặc địa chỉ
-
+    all_res = list(RESTAURANTS.values())
     results = [
         r for r in all_res
         if query in r.get('name', '').lower() or query in r.get('address', '').lower()
