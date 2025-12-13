@@ -1,160 +1,88 @@
-from flask import request, jsonify, current_app
-from core.database import DB_RESTAURANTS, MENUS_BY_RESTAURANT_ID
-from core.search import search_algorithm
+from flask import request, jsonify
 from routes.food import food_bp
+# Import các biến dữ liệu
+from core.database import DB_RESTAURANTS, MENUS_BY_RESTAURANT_ID, RESTAURANTS
+# Import thuật toán
+from core.search import search_algorithm
 
 @food_bp.route('/search', methods=['POST'])
 def search_food():
-	"""
-	API endpoint để tìm kiếm và lọc nhà hàng.
-	
-	Request Body:
-		- query: string (optional) - Từ khóa tìm kiếm
-		- province: string (optional) - Lọc theo tỉnh/thành phố
-		- lat, lon: float (optional) - Vị trí người dùng
-		- radius: float (optional) - Bán kính tìm kiếm (km)
-		- categories: list[int] (optional) - Lọc theo category IDs
-		- min_price, max_price: int (optional) - Khoảng giá (VND)
-		- min_rating, max_rating: float (optional) - Khoảng rating
-		- tags: list[str] (optional) - Lọc theo tags
-	"""
-	try:
-		data = request.get_json(force=True, silent=True)
-		if not data:
-			data = {}
-		
-		# Parse search parameters
-		query = data.get('query', '').strip() if isinstance(data.get('query'), str) else ''
-		province = data.get('province', '').strip() if isinstance(data.get('province'), str) else ''
-		
-		# Parse location
-		user_lat = data.get('lat')
-		user_lon = data.get('lon')
-		if user_lat is not None:
-			try:
-				user_lat = float(user_lat)
-			except (ValueError, TypeError):
-				user_lat = None
-		if user_lon is not None:
-			try:
-				user_lon = float(user_lon)
-			except (ValueError, TypeError):
-				user_lon = None
-		
-		# Parse filter parameters
-		radius = data.get('radius')
-		if radius is not None:
-			try:
-				radius = float(radius)
-				# ⭐️ FIX UNIT: Frontend gửi Meters, Backend dùng Km -> Convert
-				if radius > 50: # Heuristic: Nếu > 50 thì assume là mét (vì 50km là quá xa cho Food search)
-					radius = radius / 1000.0
-			except (ValueError, TypeError):
-				radius = None
-		
-		categories = data.get('categories')
-		if categories is not None and not isinstance(categories, list):
-			categories = None
-		
-		min_price = data.get('min_price')
-		if min_price is not None:
-			try:
-				min_price = int(min_price)
-			except (ValueError, TypeError):
-				min_price = None
-		
-		max_price = data.get('max_price')
-		if max_price is not None:
-			try:
-				max_price = int(max_price)
-			except (ValueError, TypeError):
-				max_price = None
-		
-		min_rating = data.get('min_rating')
-		if min_rating is not None:
-			try:
-				min_rating = float(min_rating)
-			except (ValueError, TypeError):
-				min_rating = None
-		
-		max_rating = data.get('max_rating')
-		if max_rating is not None:
-			try:
-				max_rating = float(max_rating)
-			except (ValueError, TypeError):
-				max_rating = None
-		
-		tags = data.get('tags')
-		if tags is not None and not isinstance(tags, list):
-			tags = None
+    """
+    API Tìm kiếm Nhà hàng.
+    Input: { "query": "...", "province": "...", "lat": 10.1, "lon": 106.2 }
+    """
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        
+        query = data.get('query')
+        province = data.get('province')
+        user_lat = data.get('lat')
+        user_lon = data.get('lon')
+        
+        # Chuyển đổi lat/lon sang float
+        if user_lat: user_lat = float(user_lat)
+        if user_lon: user_lon = float(user_lon)
 
-		# Debug logging (Removed)
-		# print("--- BẮT ĐẦU DEBUG REQUEST ---")
-		# print(f"1. Tổng số quán trong DB: {len(DB_RESTAURANTS)}")
-		# print(f"2. Input: Query={query}, Province={province}")
-		# print(f"3. Location: lat={user_lat}, lon={user_lon}, radius={radius}")
-		# print(f"4. Filters: categories={categories}, price={min_price}-{max_price}, rating={min_rating}-{max_rating}")
+        # Gọi thuật toán với các tham số đúng logic
+        results = search_algorithm(
+            query=query, 
+            restaurants_db=DB_RESTAURANTS, 
+            menus_by_res_id=MENUS_BY_RESTAURANT_ID,
+            restaurants_dict=RESTAURANTS,
+            province=province,
+            user_lat=user_lat,
+            user_lon=user_lon
+        )
+        
+        # --- FORMAT LẠI KẾT QUẢ ĐỂ TRẢ VỀ FRONTEND (GIỮ ĐÚNG CẤU TRÚC CŨ) ---
+        category_map = {
+            1: {"dishType": "dry", "pinColor": "red"},
+            2: {"dishType": "soup", "pinColor": "blue"},
+            3: {"dishType": "vegetarian", "pinColor": "green"},
+            4: {"dishType": "salty", "pinColor": "orange"},
+            5: {"dishType": "seafood", "pinColor": "purple"}
+        }
+        
+        formatted_results = []
+        for r in results:
+            category_id = r.get('category_id', 1)
+            category_info = category_map.get(category_id, {"dishType": "dry", "pinColor": "red"})
+            
+            formatted = {
+                "id": r.get('id'),
+                "name": r.get('name'),
+                "address": r.get('address'),
+                "position": {
+                    "lat": r.get('lat'),
+                    "lon": r.get('lon')
+                },
+                "dishType": category_info["dishType"],
+                "pinColor": category_info["pinColor"],
+                "rating": r.get('rating', 0),
+                "price_range": r.get('price_range'),
+                "phone_number": r.get('phone_number'),
+                "open_hours": r.get('open_hours'),
+                "main_image_url": r.get('main_image_url'),
+                "tags": r.get('tags', []),
+                # Các trường bổ sung từ thuật toán mới
+                "score": r.get('score'),
+                "distance_km": r.get('distance_km')
+            }
+            
+            # Giữ field 'distance' nếu frontend cũ dùng (có thể map từ distance_km hoặc để nguyên logic cũ)
+            # Ở đây ta ưu tiên distance_km vừa tính được
+            if r.get('distance_km') is not None:
+                 formatted['distance'] = r.get('distance_km')
 
-		results = search_algorithm(
-			query, 
-			DB_RESTAURANTS, 
-			MENUS_BY_RESTAURANT_ID,
-			province=province,
-			user_lat=user_lat,
-			user_lon=user_lon,
-			radius=radius,
-			categories=categories,
-			min_price=min_price,
-			max_price=max_price,
-			min_rating=min_rating,
-			max_rating=max_rating,
-			tags=tags
-		)
-		
-		# Format results để match frontend expect
-		category_map = {
-			1: {"dishType": "dry", "pinColor": "red"},
-			2: {"dishType": "soup", "pinColor": "blue"},
-			3: {"dishType": "vegetarian", "pinColor": "green"},
-			4: {"dishType": "salty", "pinColor": "orange"},
-			5: {"dishType": "seafood", "pinColor": "purple"}
-		}
-		
-		formatted_results = []
-		for r in results:
-			category_id = r.get('category_id', 1)
-			category_info = category_map.get(category_id, {"dishType": "dry", "pinColor": "red"})
-			
-			formatted = {
-				"id": r.get('id'),
-				"name": r.get('name'),
-				"address": r.get('address'),
-				"position": {
-					"lat": r.get('lat'),
-					"lon": r.get('lon')
-				},
-				"dishType": category_info["dishType"],
-				"pinColor": category_info["pinColor"],
-				"rating": r.get('rating', 0),
-				"price_range": r.get('price_range'),
-				"phone_number": r.get('phone_number'),
-				"open_hours": r.get('open_hours'),
-				"main_image_url": r.get('main_image_url'),
-				"tags": r.get('tags', [])
-			}
-			
-			# Thêm distance nếu có
-			if 'distance' in r:
-				formatted['distance'] = r['distance']
-			
-			formatted_results.append(formatted)
-		
-		return jsonify({
-			"success": True,
-			"total": len(formatted_results),
-			"places": formatted_results
-		})
-	except Exception as e:
-		import traceback
-		print(f"Lỗi xảy ra khi tìm kiếm: {e}\n{traceback.format_exc()}")
-		return jsonify({"error": "Internal server error", "detail": str(e)}), 500
+            formatted_results.append(formatted)
+
+        return jsonify({
+            "success": True,
+            "total": len(formatted_results),
+            "places": formatted_results
+        })
+
+    except Exception as e:
+        import traceback
+        print(f"Lỗi Search: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": "Internal server error"}), 500
